@@ -154,7 +154,7 @@ Use `yarn electron:build --dir` to produce only the unpacked build. Quit any run
 ## References and Credits
 
 - [manuelernestog/weektodo](https://github.com/manuelernestog/weektodo) — the original WeekToDo project this fork is based on.
-- [Pia-JI/Desktop-Todo-Calendar](https://github.com/Pia-JI/Desktop-Todo-Calendar) — a desktop todo calendar that served as a reference for the frosted-glass (Mica / Acrylic) look and desktop interaction.
+- [bubu-LZY/desktop_todo_Calendar](https://github.com/bubu-LZY/desktop_todo_Calendar) — a desktop todo calendar that served as a reference for the Mica / Acrylic glass look and desktop-embedded interaction.
 - [archisvaze/liquid-glass](https://github.com/archisvaze/liquid-glass) — the MIT-licensed reference implementation for liquid-glass edge refraction. The original notice is kept in `src/helpers/liquidGlass.js`.
 
 ## Contributing

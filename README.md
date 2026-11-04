@@ -154,7 +154,7 @@ yarn electron:build
 ## 参考与致谢
 
 - [manuelernestog/weektodo](https://github.com/manuelernestog/weektodo) — 原版 WeekToDo，本分支的上游项目。
-- [Pia-JI/Desktop-Todo-Calendar](https://github.com/Pia-JI/Desktop-Todo-Calendar) — 桌面常驻待办日历，毛玻璃（Mica / Acrylic）外观和桌面交互的参考。
+- [bubu-LZY/desktop_todo_Calendar](https://github.com/bubu-LZY/desktop_todo_Calendar) — 桌面上常驻的待办日历，Mica / Acrylic 玻璃主题和桌面嵌入交互的参考。
 - [archisvaze/liquid-glass](https://github.com/archisvaze/liquid-glass) — 液态玻璃边缘折射的参考实现（MIT 许可），原始声明保留在 `src/helpers/liquidGlass.js`。
 
 ## 参与贡献
