@@ -19,7 +19,7 @@
     </ul>
     <div class="fake-drop-zone flex-grow-1 margin-bottom-2" @drop="onDropAtEnd($event, id)"
       @dragenter.self="onDragenter" @dragleave.self="onDragleave" @dragover.prevent
-      :class="{ 'fake-drag-hover': fakeItemsDragHover }">
+      @click="startNewTodo" :class="{ 'fake-drag-hover': fakeItemsDragHover }">
       <div class="todo-item-container new-todo-row">
         <input
           v-show="newTodoActive"
@@ -32,7 +32,7 @@
           @keyup.esc="cancelAdd()"
         />
       </div>
-      <div class="fake-lines" :class="{ 'custom-list': customTodoList }" @click="startNewTodo"></div>
+      <div class="fake-lines" :class="{ 'custom-list': customTodoList }"></div>
     </div>
   </div>
 </template>
