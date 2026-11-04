@@ -1,6 +1,13 @@
 {
   "settings": {
     "settings": "Settings",
+    "desktopAppearance": "Appearance",
+    "desktopWidget": "Desktop widget",
+    "weekStartsOn": "Week starts on",
+    "monday": "Monday",
+    "sunday": "Sunday",
+    "desktopWeekHint": "The desktop widget always shows seven days.",
+    "desktopBoundsHint": "Move and resize the widget back to its default place.",
     "language": "Language",
     "customLists": "Custom Lists",
     "darkTheme": "Dark Theme",
@@ -32,6 +39,7 @@
     "runInBackground": "Run in background",
     "runInBackgroundInfo": "Allows notifications to work with the app closed. \n This option may have issues for some macOS versions.",
     "moveOldTasks": "Automatically move old tasks",
+    "wrapTaskText": "Wrap long task text",
     "importing": "Importing...",
     "exporting": "Exporting...",
     "reportErrors": "Send Errors Report",
@@ -43,7 +51,12 @@
     "moveCompletedTaskToBottom": "Move completed tasks to bottom",
     "moveCompletedSubTaskToBottom": "Move completed sub-tasks to bottom",
     "fullscreenToDoModal": "To-do Details in full screen",
-    "weekStartOnMonday": "The Week start on Monday"
+    "weekStartOnMonday": "The Week start on Monday",
+    "fontFamily": "Font",
+    "systemDefaultFont": "System default",
+    "fontColor": "Font color",
+    "fontWeight": "Font weight",
+    "useThemeColor": "Use theme color"
   },
   "donate": {
     "contribute": "Contribute",
@@ -180,7 +193,13 @@
     "copyTasks": "Copy Tasks",
     "task": "Task",
     "Frecuency": "Frecuency",
-    "showAll": "Show All"
+    "showAll": "Show All",
+    "desktopTheme": "Theme",
+    "desktopOpacity": "Opacity",
+    "desktopLock": "Lock position",
+    "desktopUnlock": "Unlock position",
+    "desktopResize": "Resize",
+    "desktopResetBounds": "Reset position & size"
   },
   "todoDetails": {
     "taskTitle": "Task title",

@@ -11,10 +11,12 @@
         }"></span>
         <span v-else class="cicle-icon"
           :class="{ 'bi-check-circle': activeTodo.toDo.checked, 'bi-circle': !activeTodo.toDo.checked, }"></span>
-        <span v-html="todoText"></span>
-        <span class="time-details"> {{ timeFormat(activeTodo.toDo.time) }}
-          <div class="alarm-indicator"
-            :class="{ 'show-alarm-indicator': notificationIndicator && activeTodo.toDo.alarm }"></div>
+        <span class="item-text-content">
+          <span v-html="todoText"></span>
+          <span class="time-details"> {{ timeFormat(activeTodo.toDo.time) }}
+            <div class="alarm-indicator"
+              :class="{ 'show-alarm-indicator': notificationIndicator && activeTodo.toDo.alarm }"></div>
+          </span>
         </span>
       </span>
       <i class="bi-three-dots todo-item-menu" type="button" @click="showToDoDetails"></i>
@@ -200,12 +202,31 @@ export default {
   }
 
   .item-text {
+    display: flex;
+    align-items: flex-start;
     white-space: unset;
     word-break: normal;
     height: unset;
+    overflow: visible;
     overflow-wrap: break-word;
     word-wrap: break-word;
     z-index: 1;
+    box-sizing: border-box;
+    padding-left: 7px;
+    text-indent: 0;
+  }
+
+  .item-text .cicle-icon {
+    flex: 0 0 15px;
+    margin-right: 0;
+  }
+
+  .item-text .item-text-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
   }
 }
 

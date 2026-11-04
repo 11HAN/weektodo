@@ -1,6 +1,7 @@
 <template>
   <ul class="list-group">
-    <li v-for="item in linkList" :key="item" class="list-group-item">
+    <li v-for="item in linkList" :key="item" class="list-group-item"
+      :class="{ 'is-active': activeLink && item.link === activeLink }">
       <div class="d-flex list-item justify-content-between" @click="linkAction(item.link,item.linktype)">
         <div class="item-img">
           <i v-if="item.ico" :style="'font-size: 20px; color: '+ item.color" :class="item.ico"></i>
@@ -21,7 +22,8 @@
             }
         },
         props: {
-            linkList: {type: Array, required: true}
+            linkList: {type: Array, required: true},
+            activeLink: {type: String, required: false, default: ""}
         },
         methods: {
             linkAction: function (link, linktype) {
@@ -71,7 +73,19 @@
     background-color: #eaecef;
   }
 
+  .list-group-item.is-active {
+    background-color: #eaecef;
+  }
+
+  .list-group-item.is-active .list-item {
+    font-weight: 600;
+  }
+
   .dark-theme .list-group-item:hover {
+    background-color: #171b20;
+  }
+
+  .dark-theme .list-group-item.is-active {
     background-color: #171b20;
   }
 

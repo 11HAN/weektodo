@@ -1,6 +1,22 @@
 export default {
     configList(vue) {
+        const desktopLinks = vue.isDesktopMode ? [
+            {
+              name: vue.$t('settings.desktopAppearance'),
+              ico: "bi-palette",
+              linktype: "tagId",
+              link: "config-desktop-appearance-tab",
+            },
+            {
+              name: vue.$t('settings.desktopWidget'),
+              ico: "bi-window",
+              linktype: "tagId",
+              link: "config-desktop-widget-tab",
+            },
+          ] : [];
+
         return [
+            ...desktopLinks,
             {
               name: vue.$t('settings.general'),
               ico: "bi-sliders",

@@ -1,6 +1,7 @@
 import storageRepository from "./storageRepository";
 import version_json from "../../public/version.json";
 import moment from "moment";
+import { notifyConfigChanged } from "../helpers/desktopSync";
 
 export default {
   load() {
@@ -31,12 +32,19 @@ export default {
         darkTrayIcon: false,
         importing: false,
         compactView: true,
+        wrapTaskText: false,
+        fontFamily: "",
+        fontColor: "",
+        fontWeight: "400",
         startCalendarYesterday: false,
         notificationIndicator: true,
         autoReorderTasks: false,
         moveCompletedTaskToBottom: true,
         moveCompletedSubTaskToBottom: true,
         fullscreenToDoModal: false,
+        desktopTheme: "frosted-white",
+        desktopOpacity: 0.68,
+        desktopLocked: false,
         weekStartOnMonday: true,
         lastDayOpened: moment().format("YYYY-MM-DD")
       };
@@ -46,5 +54,6 @@ export default {
   },
   update(config) {
     storageRepository.set("config", config);
+    notifyConfigChanged(config);
   },
 };

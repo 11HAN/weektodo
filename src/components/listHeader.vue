@@ -181,10 +181,15 @@ export default {
     },
     newTask: function () {
       this.$nextTick(function () {
-        document
-          .getElementById("list" + this.id)
-          .getElementsByClassName("new-todo-input")[0]
-          .focus();
+        const list = document.getElementById("list" + this.id);
+        if (!list) return;
+        const launcher = list.querySelector(".fake-lines");
+        if (launcher) {
+          launcher.click();
+          return;
+        }
+        const input = list.getElementsByClassName("new-todo-input")[0];
+        if (input) input.focus();
       });
     }
   },

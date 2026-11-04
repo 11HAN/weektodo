@@ -16,6 +16,18 @@
               </button>
             </li>
             <li class="nav-item" role="presentation">
+              <button class="nav-link" id="config-desktop-appearance-tab" data-bs-toggle="tab"
+                data-bs-target="#config-desktop-appearance" role="tab">
+                {{ $t("settings.desktopAppearance") }}
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="config-desktop-widget-tab" data-bs-toggle="tab"
+                data-bs-target="#config-desktop-widget" role="tab">
+                {{ $t("settings.desktopWidget") }}
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
               <button class="nav-link" id="config-general-tab" data-bs-toggle="tab" data-bs-target="#config-general"
                 role="tab">
                 General
@@ -52,27 +64,116 @@
             </li>
           </ul>
 
-          <div id="config-links-menu" class="tab-pane fade show" style="width: 340px;">
-            <link-list :linkList="configLinks"></link-list>
+          <div id="config-links-menu" class="tab-pane fade show" style="width: 280px;">
+            <link-list :linkList="configLinks" :activeLink="activeLink"></link-list>
           </div>
 
-          <div class="tab-content px-4" id="confTab-content" style="width: 100%; height: 400px; overflow-y: auto;">
-            <div class="tab-pane fade active show" id="config-general">
+          <div class="tab-content px-4 config-tab-content" id="confTab-content" style="width: 100%;">
+            <div class="tab-pane fade" id="config-desktop-appearance">
               <div class="d-flex flex-column mt-2 h-100">
+                <div class="desktop-settings-heading">{{ $t("ui.desktopTheme") }}</div>
+                <div class="desktop-theme-grid">
+                  <button
+                    v-for="theme in desktopThemes"
+                    :key="theme.id"
+                    type="button"
+                    class="desktop-theme-option"
+                    :class="{ 'is-active': (configData.desktopTheme || 'frosted-white') === theme.id }"
+                    :title="theme.name"
+                    @click="changeConfig('desktopTheme', theme.id)"
+                  >
+                    <span
+                      class="desktop-theme-swatch"
+                      :style="{ background: theme.shell, borderColor: theme.accent }"
+                    ></span>
+                    <span class="desktop-theme-name">{{ theme.name }}</span>
+                  </button>
+                </div>
+
+                <div class="desktop-theme-opacity">
+                  <div class="desktop-theme-opacity-label">
+                    <span>{{ $t("ui.desktopOpacity") }}</span>
+                    <span>{{ Math.round((Number(configData.desktopOpacity) || 0.68) * 100) }}%</span>
+                  </div>
+                  <input
+                    v-model.number="configData.desktopOpacity"
+                    type="range"
+                    min="0.15"
+                    max="1"
+                    step="0.05"
+                    @input="changeConfig('desktopOpacity', configData.desktopOpacity)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="config-desktop-widget">
+              <div class="d-flex flex-column mt-2 h-100">
+                <div class="desktop-settings-heading">{{ $t("settings.weekStartsOn") }}</div>
+                <div class="desktop-settings-choices">
+                  <label class="desktop-settings-choice">
+                    <input
+                      v-model="configData.weekStartOnMonday"
+                      type="radio"
+                      :value="true"
+                      @change="changeConfig('weekStartOnMonday', true)"
+                    />
+                    <span>{{ $t("settings.monday") }}</span>
+                  </label>
+                  <label class="desktop-settings-choice">
+                    <input
+                      v-model="configData.weekStartOnMonday"
+                      type="radio"
+                      :value="false"
+                      @change="changeConfig('weekStartOnMonday', false)"
+                    />
+                    <span>{{ $t("settings.sunday") }}</span>
+                  </label>
+                </div>
+                <p class="desktop-settings-hint">{{ $t("settings.desktopWeekHint") }}</p>
+
+                <div class="horizontal-divider mb-3"></div>
+
                 <div class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
+                  <label class="form-check-label flex-fill" for="desktopLockedSetting">
+                    {{ $t("ui.desktopLock") }}
+                  </label>
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="desktopLockedSetting"
+                    v-model="configData.desktopLocked"
+                    @change="changeConfig('desktopLocked', configData.desktopLocked)"
+                  />
+                </div>
+
+                <div class="desktop-settings-row">
+                  <span class="desktop-settings-hint flex-fill">{{ $t("settings.desktopBoundsHint") }}</span>
+                  <button type="button" class="btn desktop-settings-button" @click="resetDesktopBounds">
+                    <i class="icons bi-arrows-move"></i>
+                    {{ $t("ui.desktopResetBounds") }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="config-general">
+              <div class="d-flex flex-column mt-2 h-100">
+                <div v-if="!isDesktopMode" class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
                   <label class="form-check-label flex-fill" for="calendarSetting">{{ $t("settings.calendar") }}</label>
                   <input class="form-check-input" type="checkbox" id="calendarSetting" v-model="configData.calendar"
                     @change="changeConfig('calendar', configData.calendar)" />
                 </div>
 
-                <div class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
+                <div v-if="!isDesktopMode" class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
                   <label class="form-check-label flex-fill" for="customListsSetting">{{ $t("settings.customLists")
                   }}</label>
                   <input class="form-check-input" type="checkbox" id="customListsSetting" v-model="configData.customList"
                     @change="changeConfig('customList', configData.customList)" />
                 </div>
 
-                <div v-if="isElectron()" class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
+                <div v-if="isElectron() && !isDesktopMode"
+                  class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
                   <label class="form-check-label" for="updatesCheckSetting">{{
                     $t("settings.checkUpdates")
                   }}</label>
@@ -100,12 +201,6 @@
                     v-model="configData.runInBackground" @change="setRunInBackground()" />
                 </div>
 
-                <div class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
-                  <label class="form-check-label flex-fill" for="reportErrors">{{ $t("settings.reportErrors")
-                  }}</label>
-                  <input class="form-check-input" type="checkbox" id="reportErrors" v-model="configData.reportErrors"
-                    @change="setSendErrors()" />
-                </div>
               </div>
             </div>
             <div class="tab-pane fade" id="config-behavior">
@@ -117,15 +212,21 @@
                     @change="changeConfig('moveOldTasks', configData.moveOldTasks)" />
                 </div>
                 <div class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
+                  <label class="form-check-label flex-fill" for="wrapTaskText">{{ $t("settings.wrapTaskText")
+                  }}</label>
+                  <input class="form-check-input" type="checkbox" id="wrapTaskText" v-model="configData.wrapTaskText"
+                    @change="changeConfig('wrapTaskText', configData.wrapTaskText)" />
+                </div>
+                <div v-if="!isDesktopMode" class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
                   <label class="form-check-label flex-fill" for="weekStartOnMonday">{{ $t("settings.weekStartOnMonday")
                   }}</label>
                   <input class="form-check-input" type="checkbox" id="weekStartOnMonday" v-model="configData.weekStartOnMonday"
                     @change="changeConfig('weekStartOnMonday', configData.weekStartOnMonday)" />
                 </div>
-                <div class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
-                  <label class="form-check-label flex-fill" for="moveOldTasks">{{ $t("settings.startCalendarYesterday")
+                <div v-if="!isDesktopMode" class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
+                  <label class="form-check-label flex-fill" for="startCalendarYesterday">{{ $t("settings.startCalendarYesterday")
                   }}</label>
-                  <input class="form-check-input" type="checkbox" id="moveOldTasks"
+                  <input class="form-check-input" type="checkbox" id="startCalendarYesterday"
                     v-model="configData.startCalendarYesterday"
                     @change="changeConfig('startCalendarYesterday', configData.startCalendarYesterday)" />
                 </div>
@@ -158,7 +259,7 @@
               <div class="d-flex flex-column mt-2 h-100">
 
 
-                <div class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
+                <div v-if="!isDesktopMode" class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
                   <label class="form-check-label" for="darkThemeSetting">{{
                     $t("settings.darkTheme")
                   }}</label>
@@ -174,7 +275,7 @@
                     @change="setDarkTrayIcon" />
                 </div>
                 <div class="horizontal-divider mb-3"></div>
-                <div class="px-1 mb-3">
+                <div v-if="!isDesktopMode" class="px-1 mb-3">
                   <label for="columnsConfig" class="form-check-label">{{ $t("settings.columns") }}: {{
                     configData.columns
                   }}</label>
@@ -182,11 +283,11 @@
                     v-model="configData.columns" @change="changeConfig('columns', configData.columns)" />
                 </div>
 
-                <div class="px-1 mb-3">
-                  <label for="columnsConfig" class="form-check-label">{{ $t("settings.lists_columns") }}: {{
+                <div v-if="!isDesktopMode" class="px-1 mb-3">
+                  <label for="customColumnsConfig" class="form-check-label">{{ $t("settings.lists_columns") }}: {{
                     configData.customColumns
                   }}</label>
-                  <input type="range" class="form-range mt-2 px-2" min="1" max="12" id="columnsConfig"
+                  <input type="range" class="form-range mt-2 px-2" min="1" max="12" id="customColumnsConfig"
                     v-model="configData.customColumns"
                     @change="changeConfig('customColumns', configData.customColumns)" />
                 </div>
@@ -196,6 +297,60 @@
                   }}%</label>
                   <input type="range" class="form-range mt-2 px-2" min="50" max="200" id="zoomConfig" step="5"
                     v-model="configData.zoom" @change="changeConfig('zoom', configData.zoom)" />
+                </div>
+
+                <div class="px-1 mb-3">
+                  <label for="fontFamilyConfig" class="form-check-label">{{ $t("settings.fontFamily") }}</label>
+                  <select id="fontFamilyConfig" class="form-select mt-2" v-model="configData.fontFamily"
+                    @change="changeConfig('fontFamily', configData.fontFamily)">
+                    <option value="">{{ $t("settings.systemDefaultFont") }}</option>
+                    <option
+                      v-if="configData.fontFamily && !systemFonts.includes(configData.fontFamily)"
+                      :value="configData.fontFamily"
+                    >
+                      {{ configData.fontFamily }}
+                    </option>
+                    <option v-for="font in systemFonts" :key="font" :value="font">{{ font }}</option>
+                  </select>
+
+                  <div class="font-control-row">
+                    <label for="fontColorConfig" class="form-check-label">{{ $t("settings.fontColor") }}</label>
+                    <input
+                      id="fontColorConfig"
+                      type="color"
+                      class="font-color-input"
+                      :value="configData.fontColor || '#111827'"
+                      @input="changeConfig('fontColor', $event.target.value)"
+                    />
+                    <button
+                      type="button"
+                      class="btn font-reset-button"
+                      @click="changeConfig('fontColor', '')"
+                    >
+                      {{ $t("settings.useThemeColor") }}
+                    </button>
+                  </div>
+
+                  <div class="font-control-row">
+                    <label for="fontWeightConfig" class="form-check-label">{{ $t("settings.fontWeight") }}</label>
+                    <select
+                      id="fontWeightConfig"
+                      class="form-select font-weight-select"
+                      v-model="configData.fontWeight"
+                      @change="changeConfig('fontWeight', configData.fontWeight)"
+                    >
+                      <option value="300">300</option>
+                      <option value="400">400</option>
+                      <option value="500">500</option>
+                      <option value="600">600</option>
+                      <option value="700">700</option>
+                      <option value="800">800</option>
+                      <option value="900">900</option>
+                      <option value="1000">1000</option>
+                    </select>
+                  </div>
+
+                  <div class="font-preview" :style="fontPreviewStyle">WeekToDo · 每周计划 · Aa 123</div>
                 </div>
 
                 <div class="form-check form-switch d-flex px-1 mb-3 justify-content-between">
@@ -217,7 +372,8 @@
             </div>
             <div class="tab-pane fade" id="config-notifications">
               <div class="d-flex flex-column mt-3 h-100">
-                <div v-if="isElectron()" class="orm-check form-switch d-flex px-0 mb-3  justify-content-between">
+                <div v-if="isElectron() && !isDesktopMode"
+                  class="orm-check form-switch d-flex px-0 mb-3  justify-content-between">
                   <label class="form-check-label" style="margin-left: 0px" for="notificationOnStartup">{{
                     $t("settings.notificationOnStartup")
                   }}</label>
@@ -341,6 +497,8 @@ import linkList from "../components/linkList";
 import configList from "./configList";
 import notifications from "../helpers/notifications";
 import { Modal } from "bootstrap";
+import { IS_DESKTOP_MODE, IS_DESKTOP_SETTINGS_WINDOW } from "../helpers/desktopMode";
+import { DESKTOP_THEMES } from "../helpers/desktopThemes";
 
 export default {
   name: "configModal",
@@ -351,7 +509,61 @@ export default {
   data() {
     return {
       configData: this.$store.getters.config,
+      desktopThemes: DESKTOP_THEMES,
+      activeLink: "config-desktop-widget-tab",
+      systemFonts: [],
     };
+  },
+  mounted() {
+    this.tabShownHandler = (event) => {
+      if (event.target && event.target.id) this.activeLink = event.target.id;
+    };
+    document.addEventListener("shown.bs.tab", this.tabShownHandler);
+
+    if (typeof this.configData.fontFamily !== "string") {
+      this.changeConfig("fontFamily", "");
+    }
+    if (typeof this.configData.fontColor !== "string") {
+      this.changeConfig("fontColor", "");
+    }
+    if (typeof this.configData.fontWeight !== "string") {
+      this.changeConfig("fontWeight", "400");
+    }
+
+    if (this.isElectron()) {
+      try {
+        const { ipcRenderer } = require("electron");
+        ipcRenderer
+          .invoke("get-system-fonts")
+          .then((fonts) => {
+            this.systemFonts = Array.isArray(fonts) ? fonts : [];
+          })
+          .catch(() => {
+            this.systemFonts = [];
+          });
+      } catch (error) {
+        this.systemFonts = [];
+      }
+    }
+
+    if (!this.isDesktopMode) return;
+    if (!this.configData.desktopTheme) {
+      this.changeConfig("desktopTheme", "frosted-white");
+    }
+    if (typeof this.configData.desktopOpacity !== "number") {
+      this.changeConfig("desktopOpacity", 0.68);
+    }
+    if (typeof this.configData.desktopLocked !== "boolean") {
+      this.changeConfig("desktopLocked", false);
+    }
+    if (typeof this.configData.weekStartOnMonday !== "boolean") {
+      this.changeConfig("weekStartOnMonday", true);
+    }
+  },
+  beforeUnmount() {
+    if (this.tabShownHandler) {
+      document.removeEventListener("shown.bs.tab", this.tabShownHandler);
+    }
   },
   methods: {
     changeConfig: function (key, val) {
@@ -370,15 +582,15 @@ export default {
       });
     },
     exportData: function () {
-      let configModal = Modal.getInstance(document.getElementById("configModal"));
-      configModal.hide();
+      let configModal = Modal.getOrCreateInstance(document.getElementById("configModal"));
+      if (!this.isDesktopSettingsWindow) configModal.hide();
       let exportingModal = new Modal(document.getElementById("exportingModal"), { backdrop: "static" });
       exportingModal.show();
       exportTool.export();
     },
     importData: function (event) {
-      let configModal = Modal.getInstance(document.getElementById("configModal"));
-      configModal.hide();
+      let configModal = Modal.getOrCreateInstance(document.getElementById("configModal"));
+      if (!this.isDesktopSettingsWindow) configModal.hide();
       let importingModal = new Modal(document.getElementById("importingModal"), { backdrop: "static" });
       importingModal.show();
       exportTool.import(event);
@@ -417,8 +629,10 @@ export default {
         }
       });
     },
-    setSendErrors: function () {
-      this.changeConfig('reportErrors', this.configData.reportErrors);
+    resetDesktopBounds: function () {
+      if (!this.isElectron()) return;
+      const { ipcRenderer } = require("electron");
+      ipcRenderer.send("desktop-widget-reset-bounds");
     },
     setDarkTrayIcon: function () {
       this.changeConfig('darkTrayIcon', this.configData.darkTrayIcon);
@@ -434,14 +648,32 @@ export default {
     },
   },
   computed: {
+    isDesktopMode: function () {
+      return IS_DESKTOP_MODE;
+    },
+    isDesktopSettingsWindow: function () {
+      return IS_DESKTOP_SETTINGS_WINDOW;
+    },
+    fontPreviewStyle: function () {
+      const font = String(this.configData.fontFamily || "")
+        .replace(/["\\]/g, "")
+        .trim();
+      const style = {};
+      if (font) {
+        style.fontFamily = `"${font}", "Segoe UI", system-ui, sans-serif`;
+      }
+      if (this.configData.fontColor) style.color = this.configData.fontColor;
+      if (this.configData.fontWeight) style.fontWeight = this.configData.fontWeight;
+      return style;
+    },
     configLinks: function () {
       return configList.configList(this);
     },
-    watch: {
-      configProp: function (newVal) {
-        this.configData = newVal;
-      }
-    }
+  },
+  watch: {
+    configProp: function (newVal) {
+      this.configData = newVal;
+    },
   },
 };
 </script>
@@ -455,11 +687,152 @@ export default {
 }
 
 #config-links-menu {
+  max-height: 400px;
+  overflow-y: auto;
   border-right: 1px solid rgba(0, 0, 0, 0.06);
 
 .dark-theme & {
   border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
+}
+
+.config-tab-content {
+  height: 400px;
+  overflow-y: auto;
+}
+
+@media (max-height: 560px) {
+  .config-tab-content,
+  #config-links-menu {
+    height: max(160px, calc(100vh - 150px));
+    max-height: max(160px, calc(100vh - 150px));
+  }
+}
+
+.desktop-settings-heading {
+  margin-bottom: 9px;
+  color: var(--dw-text, inherit);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.desktop-settings-choices {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.desktop-settings-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  padding: 7px 10px;
+  color: var(--dw-muted, inherit);
+  font-size: 0.8rem;
+  border: 1px solid var(--dw-border, rgba(0, 0, 0, 0.12));
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.desktop-settings-choice:has(input:checked) {
+  color: var(--dw-text, inherit);
+  border-color: var(--dw-accent, #3b82f6);
+  background: var(--dw-accent-soft, rgba(59, 130, 246, 0.12));
+}
+
+.desktop-settings-choice input {
+  accent-color: var(--dw-accent, #3b82f6);
+}
+
+.desktop-settings-hint {
+  margin-bottom: 0;
+  color: var(--dw-muted, #6b7280);
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+.desktop-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.desktop-settings-button {
+  flex: 0 0 auto;
+  padding: 5px 10px;
+  color: var(--dw-text, inherit);
+  font-size: 0.76rem;
+  white-space: nowrap;
+  background: var(--dw-accent-soft, rgba(59, 130, 246, 0.12));
+  border: 1px solid var(--dw-border, rgba(0, 0, 0, 0.12));
+  border-radius: 8px;
+}
+
+.desktop-settings-button:hover {
+  color: var(--dw-text, inherit);
+  border-color: var(--dw-accent, #3b82f6);
+}
+
+.font-preview {
+  margin-top: 8px;
+  padding: 8px 10px;
+  color: #374151;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  border: 1px dashed rgba(15, 23, 42, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.font-control-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.font-control-row .form-check-label {
+  flex: 0 0 86px;
+  margin-left: 0;
+  padding-top: 0;
+}
+
+.font-color-input {
+  width: 42px;
+  height: 30px;
+  padding: 2px;
+  background: transparent;
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.font-reset-button {
+  padding: 4px 10px;
+  color: #374151;
+  font-size: 0.75rem;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.font-weight-select {
+  width: 110px;
+}
+
+.dark-theme .font-preview {
+  color: #c9d1d9;
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dark-theme .font-color-input,
+.dark-theme .font-reset-button {
+  color: #c9d1d9;
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 

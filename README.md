@@ -13,6 +13,7 @@ WeekToDo is a free minimalist weekly planner app focused on privacy. Schedule yo
 - Light/dark mode toggle
 - Custom To-do Lists
 - Drag and Drop
+- Optional interactive Windows desktop widget
 - Multi-language
 - Sub-tasks
 - Markdown Support
@@ -59,6 +60,44 @@ WeekToDo is an GPL-licensed open source project with its ongoing development mad
 </p>
 
   
+## Desktop Widget (Windows)
+
+On Windows, WeekToDo can run a second, compact weekly view directly on the
+desktop. It is attached to the shell's desktop tree (`SHELLDLL_DefView`) rather
+than being faked with an always-on-top or "lowered" window, so it stays below
+normal application windows and survives Win+D. It is placed above the desktop
+icon list inside its own rectangle so mouse clicks, text input and task drag and
+drop continue to work.
+
+On Windows the app starts as the desktop widget only; the old normal WeekToDo
+window is no longer created. Use the tray menu to open settings, toggle the
+widget, or quit.
+
+- Drag the widget by its header when it is unlocked.
+- The padlock button locks/unlocks position and resizing. While locked, the
+  weekly panes, tasks, and buttons still receive clicks normally.
+- Resize from the left/right edges, bottom edge, and the two bottom corners.
+  The header stays a pure drag handle. Position and size are remembered.
+- The widget always shows exactly seven days, starting on Monday or Sunday as
+  configured under Settings -> Desktop widget.
+- The gear button and the tray Settings entry open a separate, resizeable
+  settings window, so settings stay usable even when the widget is very short.
+  Appearance (frosted, acrylic, liquid-glass, paper and dark themes plus a live
+  opacity slider) and Desktop widget (week start, lock, reset position/size) are
+  separate pages, and the regular General/Behavior/Display/Notifications/Data/
+  Language settings remain available.
+- Display settings can pick an installed Windows font, font colour and font
+  weight for the whole app. The custom font is read from the system and synced
+  live to the widget and settings windows.
+- The palette-style button in older builds has been replaced by the gear
+  settings button.
+
+The widget samples the desktop wallpaper through `PrintWindow(Progman)` and
+blurs it behind the card, so its colours follow the actual wallpaper while the
+Electron window stays opaque and interactive. The widget is disabled
+automatically if the Windows desktop layer cannot be attached; the app does not
+fall back to a normal top-level window.
+
 ## Installation
 
 ### Download installer 

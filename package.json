@@ -38,6 +38,7 @@
     "cryptocurrency-icons": "^0.17.1",
     "electron-config": "^2.0.0",
     "is-electron": "^2.2.1",
+    "koffi": "^3.3.6",
     "linkify-string": "^3.0.4",
     "linkifyjs": "^3.0.5",
     "lodash.uniqueid": "^4.0.1",

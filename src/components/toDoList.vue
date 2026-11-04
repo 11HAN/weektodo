@@ -20,11 +20,19 @@
     <div class="fake-drop-zone flex-grow-1 margin-bottom-2" @drop="onDropAtEnd($event, id)"
       @dragenter.self="onDragenter" @dragleave.self="onDragleave" @dragover.prevent
       :class="{ 'fake-drag-hover': fakeItemsDragHover }">
-      <div class="todo-item-container">
-        <input class="todo-input new-todo-input" type="text" ref="newToDoInput" v-model="newToDo.text" @blur="addToDo()"
-          @keyup.enter="addToDo()" @keyup.esc="cancelAdd()" />
+      <div class="todo-item-container new-todo-row">
+        <input
+          v-show="newTodoActive"
+          class="todo-input new-todo-input"
+          type="text"
+          ref="newToDoInput"
+          v-model="newToDo.text"
+          @blur="addToDo()"
+          @keyup.enter="addToDo()"
+          @keyup.esc="cancelAdd()"
+        />
       </div>
-      <div class="fake-lines" :class="{ 'custom-list': customTodoList }" @click="$refs.newToDoInput.focus()"></div>
+      <div class="fake-lines" :class="{ 'custom-list': customTodoList }" @click="startNewTodo"></div>
     </div>
   </div>
 </template>
@@ -37,6 +45,7 @@ import listHeader from "./listHeader";
 import notifications from "../helpers/notifications";
 import repeatingEventHelper from "../helpers/repeatingEvents.js";
 import tasksHelper from "../helpers/tasksHelper";
+import { IS_DESKTOP_MODE } from "../helpers/desktopMode";
 
 export default {
   components: {
@@ -52,6 +61,7 @@ export default {
   data() {
     return {
       newToDo: { text: "", checked: false },
+      newTodoActive: false,
       fakeItemCounts: 6,
       fakeItemsDragHover: false,
       loading: false,
@@ -79,6 +89,12 @@ export default {
     this.$store.commit("loadTodoLists", { todoListId: listId, todoList: [] });
   },
   methods: {
+    startNewTodo: function () {
+      this.newTodoActive = true;
+      this.$nextTick(() => {
+        if (this.$refs.newToDoInput) this.$refs.newToDoInput.focus();
+      });
+    },
     addToDo: function () {
       if (this.newToDo.text != "") {
         var newTodo = {
@@ -98,9 +114,11 @@ export default {
         this.updateTodoList(this.id, this.$store.getters.todoLists[this.id]);
         this.newToDo.text = "";
       }
+      this.newTodoActive = false;
     },
     cancelAdd: function () {
       this.newToDo.text = "";
+      this.newTodoActive = false;
     },
     moments: function (date) {
       return moment(date);
@@ -176,9 +194,10 @@ export default {
       return this.$store.getters.todoLists[this.id];
     },
     columns: function () {
+      if (IS_DESKTOP_MODE) return 7;
       if (this.customTodoList)
         return this.$store.getters.config.customColumns;
-        
+
       return this.$store.getters.config.columns;
     },
   },
@@ -257,13 +276,15 @@ export default {
 }
 
 .fake-drag-hover .todo-item-container {
-  box-shadow: rgb(244, 243, 243) 0px 0px 4px 1px inset;
-  background-color: rgb(250, 249, 249);
+  border-radius: 8px;
+  border-bottom-color: transparent;
+  background-color: var(--dw-accent-soft, rgba(59, 130, 246, 0.12));
+  box-shadow: inset 0 0 0 1px var(--dw-accent, rgba(59, 130, 246, 0.35));
 }
 
 .dark-theme .fake-drag-hover .todo-item-container {
-  box-shadow: #0b0d12 0px 0px 4px 1px inset;
-  background-color: #0c0d14;
+  background-color: var(--dw-accent-soft, rgba(125, 211, 252, 0.1));
+  box-shadow: inset 0 0 0 1px var(--dw-accent, rgba(125, 211, 252, 0.35));
 }
 
 .fake-drag-hover input,
@@ -305,6 +326,19 @@ export default {
   width: 100%;
   border: none;
   font-size: 0.865rem;
+}
+
+.new-todo-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  border-bottom: none;
+}
+
+.new-todo-row .new-todo-input {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .todo-input:focus {

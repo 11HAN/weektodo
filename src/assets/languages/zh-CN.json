@@ -1,6 +1,13 @@
 {
   "settings": {
     "settings": "设置",
+    "desktopAppearance": "外观",
+    "desktopWidget": "桌面组件",
+    "weekStartsOn": "每周开始于",
+    "monday": "周一",
+    "sunday": "周日",
+    "desktopWeekHint": "桌面组件固定显示七天。",
+    "desktopBoundsHint": "将组件的位置和大小恢复为默认值。",
     "language": "语言",
     "customLists": "自定义列表",
     "darkTheme": "深色主题",
@@ -31,6 +38,7 @@
     "runInBackground": "在后台运行",
     "runInBackgroundInfo": "允许通知在应用关闭的情况下工作。 \n 对于某些 macOS 版本，此选项可能存在问题。",
     "moveOldTasks": "自动移动旧任务",
+    "wrapTaskText": "长任务文字自动换行",
     "importing": "正在导入...",
     "exporting": "正在导出...",
     "reportErrors": "发送错误报告",
@@ -43,7 +51,12 @@
     "weekStartOnMonday": "从星期一开始",
     "clear": "清除",
     "fullscreenToDoModal": "全屏显示“待办事项详情”",
-    "moveCompletedSubTaskToBottom": "将已完成的子任务移到底部"
+    "moveCompletedSubTaskToBottom": "将已完成的子任务移到底部",
+    "fontFamily": "字体",
+    "systemDefaultFont": "系统默认",
+    "fontColor": "字体颜色",
+    "fontWeight": "字重",
+    "useThemeColor": "跟随主题"
   },
   "donate": {
     "contribute": "贡献",
@@ -180,7 +193,13 @@
     "task": "任务",
     "Frecuency": "频率",
     "print": "PDF/打印",
-    "showAll": "显示所有"
+    "showAll": "显示所有",
+    "desktopTheme": "主题",
+    "desktopOpacity": "透明度",
+    "desktopLock": "锁定位置",
+    "desktopUnlock": "解锁位置",
+    "desktopResize": "调整大小",
+    "desktopResetBounds": "重置位置和大小"
   },
   "todoDetails": {
     "taskTitle": "任务标题",

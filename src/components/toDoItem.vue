@@ -1,10 +1,12 @@
 <template>
   <div class="item-drop-zone" @dragenter.self="onDragenter" @dragleave.self="onDragleave" @drop="onDragleave"
     :class="[{ 'drag-hover': todoDragHover }]">
-    <div class="todo-item-container" :class="{ 'compact-view': compactView }" ref="itemContainer">
+    <div class="todo-item-container" :class="{ 'compact-view': compactView, 'wrap-text': wrapTaskText }"
+      ref="itemContainer">
       <div v-if="!editing" class="inline-todo-item d-flex flex-column" @mouseenter="showToDoItem">
         <div class="d-flex">
-          <span class="noselect item-text" :class="{ 'checked-todo': toDo.checked, 'compact-view': compactView }"
+          <span class="noselect item-text"
+            :class="{ 'checked-todo': toDo.checked, 'compact-view': compactView, 'wrap-text': wrapTaskText }"
             style="flex-grow: 1">
             <span v-if="toDo.color != 'none'" class="cicle-icon" :style="'color: ' + toDo.color" :class="{
               'bi-check-circle-fill': toDo.checked,
@@ -12,11 +14,13 @@
             }"></span>
             <span v-else class="cicle-icon"
               :class="{ 'bi-check-circle': toDo.checked, 'bi-circle': !toDo.checked, }"></span>
-            <span v-html="todoText"></span>
-            <span v-if="!compactView" class="item-time mx-2" :class="{ 'checked-todo': toDo.checked }"> {{
-                timeFormat(toDo.time)
-            }} <div class="alarm-indicator" :class="{ 'show-alarm-indicator': notificationIndicator && toDo.alarm }">
-              </div></span>
+            <span class="item-text-content">
+              <span v-html="todoText"></span>
+              <span v-if="!compactView" class="item-time mx-2" :class="{ 'checked-todo': toDo.checked }"> {{
+                  timeFormat(toDo.time)
+              }} <div class="alarm-indicator" :class="{ 'show-alarm-indicator': notificationIndicator && toDo.alarm }">
+                </div></span>
+            </span>
           </span>
           <span v-if="compactView" class="item-time" :class="{ 'checked-todo': toDo.checked }"> {{ timeFormat(toDo.time)
           }}
@@ -114,6 +118,9 @@ export default {
     compactView: function () {
       return this.$store.getters.config.compactView;
     },
+    wrapTaskText: function () {
+      return this.$store.getters.config.wrapTaskText;
+    },
     notificationIndicator: function () {
       return this.$store.getters.config.notificationIndicator;
     }
@@ -130,6 +137,11 @@ export default {
   .dark-theme & {
     border-bottom: 1px solid #30363d;
   }
+}
+
+.item-drop-zone {
+  border-radius: 8px;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .dragging-item .item-drop-zone * {
@@ -162,6 +174,42 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
   height: 1.2rem;
+}
+
+.item-text.wrap-text,
+.item-text.compact-view.wrap-text {
+  display: flex;
+  align-items: flex-start;
+  flex: 1 1 auto;
+  width: auto;
+  max-width: 100%;
+  overflow: visible;
+  white-space: normal;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  height: auto;
+  min-width: 0;
+  box-sizing: border-box;
+  padding-left: 7px;
+  text-indent: 0;
+}
+
+.item-text.wrap-text .cicle-icon {
+  flex: 0 0 15px;
+  margin-right: 0;
+}
+
+.item-text.wrap-text .item-text-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.item-text.wrap-text .time-details {
+  white-space: normal;
 }
 
 .item-time {
@@ -207,15 +255,20 @@ export default {
 }
 
 .drag-hover {
-  color: rgba(157, 157, 157, 0.43);
-  box-shadow: rgb(244, 243, 243) 0px 0px 4px 1px inset;
-  background-color: rgb(250, 249, 249);
+  color: inherit;
+  border-radius: 8px;
+  background-color: var(--dw-accent-soft, rgba(59, 130, 246, 0.12));
+  box-shadow: inset 0 0 0 1px var(--dw-accent, rgba(59, 130, 246, 0.35));
+}
+
+.drag-hover .todo-item-container {
+  border-bottom-color: transparent;
 }
 
 .dark-theme .drag-hover {
-  color: rgb(69, 69, 69);
-  box-shadow: #0b0d12 0px 0px 4px 1px inset;
-  background-color: #0c0d14;
+  color: inherit;
+  background-color: var(--dw-accent-soft, rgba(125, 211, 252, 0.1));
+  box-shadow: inset 0 0 0 1px var(--dw-accent, rgba(125, 211, 252, 0.35));
 }
 
 .sub-tasks {
@@ -261,5 +314,11 @@ export default {
 
 .todo-item-container.compact-view {
   height: 26px;
+}
+
+.todo-item-container.wrap-text,
+.todo-item-container.compact-view.wrap-text {
+  height: auto;
+  min-height: 26px;
 }
 </style>

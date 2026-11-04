@@ -107,7 +107,7 @@ function createExportLink(filename, fileBody) {
   document.body.removeChild(element);
   setTimeout(function () {
     let exportingModal = Modal.getInstance(document.getElementById("exportingModal"));
-    exportingModal.hide();
+    if (exportingModal) exportingModal.hide();
   },1000);
 }
 
