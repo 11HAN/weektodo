@@ -5,7 +5,27 @@
 
 WeekToDo is a free minimalist weekly planner app focused on privacy. Schedule your tasks and projects with to do lists and a calendar. Available for Windows, Mac, Linux or online.
 
+> This fork adds an interactive Windows desktop widget, liquid-glass themes, system-font selection, and several desktop-oriented layout improvements to the original WeekToDo app.
+
 ![Logo](https://weektodo.me/weektodo-preview.webp)
+
+## Screenshots
+
+### Windows desktop widget
+
+<p align="center">
+  <img src="docs/screenshots/desktop-widget.png" alt="WeekToDo desktop widget on Windows" width="100%" />
+</p>
+
+<p align="center">
+  <sub>Empty future week shown to avoid exposing personal task data.</sub>
+</p>
+
+### Settings
+
+<p align="center">
+  <img src="docs/screenshots/settings-font.png" alt="WeekToDo settings with system font options" width="70%" />
+</p>
 
 ## Features
 
@@ -14,6 +34,9 @@ WeekToDo is a free minimalist weekly planner app focused on privacy. Schedule yo
 - Custom To-do Lists
 - Drag and Drop
 - Optional interactive Windows desktop widget
+- Liquid-glass, frosted, acrylic and paper desktop themes
+- System font family, font colour and font weight selection
+- Live config sync between the widget and settings windows
 - Multi-language
 - Sub-tasks
 - Markdown Support
@@ -30,7 +53,6 @@ WeekToDo is a free minimalist weekly planner app focused on privacy. Schedule yo
 - Mobile Version
 - Sync across devices
 - Workspaces
-- Themes
 
 ## Sponsors
 
@@ -73,22 +95,31 @@ On Windows the app starts as the desktop widget only; the old normal WeekToDo
 window is no longer created. Use the tray menu to open settings, toggle the
 widget, or quit.
 
-- Drag the widget by its header when it is unlocked.
+- Drag the widget by its header when it is unlocked. The header is a pure drag
+  handle; the top edge and top corners are not resize zones.
 - The padlock button locks/unlocks position and resizing. While locked, the
   weekly panes, tasks, and buttons still receive clicks normally.
-- Resize from the left/right edges, bottom edge, and the two bottom corners.
-  The header stays a pure drag handle. Position and size are remembered.
+- Resize from the left/right edges, the bottom edge, and the two bottom corners.
+  Position and size are remembered.
 - The widget always shows exactly seven days, starting on Monday or Sunday as
   configured under Settings -> Desktop widget.
-- The gear button and the tray Settings entry open a separate, resizeable
-  settings window, so settings stay usable even when the widget is very short.
-  Appearance (frosted, acrylic, liquid-glass, paper and dark themes plus a live
-  opacity slider) and Desktop widget (week start, lock, reset position/size) are
-  separate pages, and the regular General/Behavior/Display/Notifications/Data/
-  Language settings remain available.
-- Display settings can pick an installed Windows font, font colour and font
-  weight for the whole app. The custom font is read from the system and synced
-  live to the widget and settings windows.
+- Add tasks by clicking the empty area below a day's tasks or from the three-dot
+  menu. There is no persistent new-task button in the desktop widget.
+- Each day's task list scrolls with the mouse wheel while the outer card stays
+  fixed. Scrollbars are hidden, and the day header and input area stay in place.
+  The widget can be reduced to 320 DIP height.
+- The gear button and the tray Settings entry open a separate, frameless,
+  resizeable settings window. Its top "设置" bar is draggable and contains the
+  close button.
+- Appearance includes frosted, acrylic, paper, liquid-glass clear, liquid-glass
+  white, and liquid-glass dark themes, plus a live opacity slider. The
+  liquid-glass themes use SVG refraction on the outer card, header, and day
+  columns together with CSS specular highlights.
+- Display settings can pick an installed Windows font family, a custom font
+  colour, and a font weight from 300 to 1000. Settings are saved and synced live
+  across the widget and settings windows.
+- Wrapped task text uses a hanging indent, and the hover details card stays
+  opaque for readability.
 - The palette-style button in older builds has been replaced by the gear
   settings button.
 
@@ -137,12 +168,14 @@ If you want to understand how WeekToDo works or want to debug an issue, you'll w
 You'll need git, a recent version of [Node.JS](https://nodejs.org/en/) (currently v16.X is recommended), [Yarn](https://yarnpkg.com/) and [Electron](https://www.electronjs.org/).
 
 ```
-git clone https://github.com/manuelernestog/weektodo
+git clone https://github.com/11HAN/weektodo
 cd weektodo
 yarn install
 yarn run serve // to run web version
 yarn run electron:serve // to run native version
 ```
+
+Upstream project: [manuelernestog/weektodo](https://github.com/manuelernestog/weektodo).
 
 ### Docker
 
@@ -183,6 +216,16 @@ If this is to dificult, you can donwload this [file](src/assets/languages/en.jso
 Weektodo is open-source. Pull requests and contributions are welcome! There are three ways to contribute: grab a [bug report](https://github.com/manuelernestog/issues?q=is%3Aopen+is%3Aissue+label%3Abug) or [feature suggestion](https://github.com/manuelernestog/issues?q=is%3Aissue+is%3Aopen+label%3Afeature) that has been marked `accepted` and dig in.
 
 Read [Contributing.md](/CONTRIBUTING.md) for more information.
+
+## License
+
+This fork is distributed under the GNU General Public License v3. See
+[LICENSE](LICENSE). The original WeekToDo project is by
+[Manuel Ernesto Garcia](https://manuelernestogr.bio.link/).
+
+The liquid-glass refraction code was adapted from Archis Vaze's MIT-licensed
+[liquid-glass](https://github.com/archisvaze/liquid-glass) demo. The original
+MIT notice is kept in `src/helpers/liquidGlass.js`.
 
 ## Author
 
