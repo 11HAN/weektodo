@@ -110,7 +110,7 @@ The widget samples the desktop wallpaper through `PrintWindow(Progman)` and blur
 
 Download the latest installer from [Releases](https://github.com/11HAN/weektodo/releases/latest):
 
-- `WeekToDo Setup 2.2.0.exe` (x64)
+- `WeekToDo Setup 2.2.1.exe` (x64)
 
 After installation, the app starts directly as the desktop widget. Use the tray menu to open settings, toggle the widget, or quit.
 
@@ -146,7 +146,7 @@ yarn electron:build
 
 Output:
 
-- Installer: `dist_electron\WeekToDo Setup 2.2.0.exe`
+- Installer: `dist_electron\WeekToDo Setup 2.2.1.exe`
 - Unpacked build: `dist_electron\win-unpacked\WeekToDo.exe`
 
 Use `yarn electron:build --dir` to produce only the unpacked build. Quit any running WeekToDo instance before packaging.
