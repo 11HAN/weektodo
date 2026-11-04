@@ -95,6 +95,7 @@ The app starts as the desktop widget only; the old normal WeekToDo window is no 
 - Resize from the left/right edges, the bottom edge, and the two bottom corners. Position and size are remembered.
 - The widget always shows exactly seven days, starting on Monday or Sunday as configured under Settings -> Desktop widget.
 - Add tasks by clicking the empty area below a day's tasks or from the three-dot menu. There is no persistent new-task button in the desktop widget.
+- While a text field is focused the widget temporarily becomes a normal top-level window so the IME candidate window follows the caret; it returns to the desktop layer when the field loses focus.
 - Each day's task list scrolls with the mouse wheel while the outer card stays fixed. Scrollbars are hidden, and the day header and input area stay in place. The widget can be reduced to 320 DIP height.
 - The gear button and the tray Settings entry open a separate, frameless, resizeable settings window. Its top "设置" bar is draggable and contains the close button.
 - Appearance includes frosted, acrylic, paper, liquid-glass clear, liquid-glass white, and liquid-glass dark themes, plus a live opacity slider. The liquid-glass themes use SVG refraction on the outer card, header, and day columns together with CSS specular highlights.
