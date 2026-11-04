@@ -4,14 +4,14 @@
 
 ---
 
-![GitHub all releases](https://img.shields.io/github/downloads/zuntek/weektodoweb/total)
+![GitHub all releases](https://img.shields.io/github/downloads/11HAN/weektodo/total)
 [![vue3](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://vuejs.org/)
 
-WeekToDo 是一款注重隐私的免费极简周计划应用。你可以用待办列表和日历安排任务与项目，支持 Windows、macOS、Linux 以及网页版。
+WeekToDo 是一款注重隐私的免费极简周计划应用。你可以用待办列表和日历安排任务与项目。
 
-> 本分支在原版 WeekToDo 的基础上增加了可交互的 Windows 桌面组件、液态玻璃主题、系统字体选择，以及多项桌面端布局改进。
+> 本分支将周视图做成常驻 Windows 桌面的组件，并增加了液态玻璃主题、系统字体选择和多项桌面端布局改进。当前仅提供 Windows 版本，基于[原版 WeekToDo](https://github.com/manuelernestog/weektodo)二次开发。
 
-![Logo](https://weektodo.me/weektodo-preview.webp)
+[![下载 Windows 版](https://img.shields.io/badge/Download-Windows-2ea44f?logo=windows)](https://github.com/11HAN/weektodo/releases/latest)
 
 ## 截图
 
@@ -33,11 +33,10 @@ WeekToDo 是一款注重隐私的免费极简周计划应用。你可以用待�
 
 ## 功能
 
-- 跨平台
+- Windows 交互式桌面组件（挂载到桌面层，Win+D 后仍显示）
 - 浅色 / 深色模式切换
 - 自定义待办列表
 - 拖放
-- 可选的 Windows 交互式桌面组件
 - 液态玻璃、磨砂、亚克力和纸质桌面主题
 - 系统字体、字体颜色和字重选择
 - 组件与设置窗口之间实时同步配置
@@ -54,7 +53,7 @@ WeekToDo 是一款注重隐私的免费极简周计划应用。你可以用待�
 ## 路线图
 
 - 触屏模式
-- 移动版
+- 多显示器适配
 - 跨设备同步
 - 工作区
 
@@ -87,9 +86,9 @@ WeekToDo 是一个 GPL 许可的开源项目，其持续开发完全依靠用户
 
 ## 桌面组件（Windows）
 
-在 Windows 上，WeekToDo 可以直接在桌面上运行第二个紧凑的周视图。它挂载到 Shell 的桌面窗口树（`SHELLDLL_DefView`），而不是用置顶或“降到底层”的方式伪装，因此它始终位于普通应用窗口之下，并且在按 Win+D 后仍然显示。它被放在桌面图标列表之上、自己的矩形区域内，鼠标点击、文本输入和任务拖放都能正常工作。
+在 Windows 上，WeekToDo 可以直接在桌面上运行一个紧凑的周视图。它挂载到 Shell 的桌面窗口树（`SHELLDLL_DefView`），而不是用置顶或“降到底层”的方式伪装，因此它始终位于普通应用窗口之下，并且在按 Win+D 后仍然显示。它被放在桌面图标列表之上、自己的矩形区域内，鼠标点击、文本输入和任务拖放都能正常工作。
 
-在 Windows 上，应用只启动桌面组件，不再创建原来的普通 WeekToDo 窗口。可通过托盘菜单打开设置、开关组件或退出。
+应用只启动桌面组件，不再创建原来的普通 WeekToDo 窗口。可通过托盘菜单打开设置、开关组件或退出。
 
 - 解锁后可拖动组件顶部栏移动位置。顶部栏只作为拖动把手，顶边和顶部两个角不是缩放区域。
 - 锁按钮用于锁定 / 解锁位置和缩放。锁定后，周视图、任务和按钮仍然可以正常点击。
@@ -105,94 +104,74 @@ WeekToDo 是一个 GPL 许可的开源项目，其持续开发完全依靠用户
 
 组件通过 `PrintWindow(Progman)` 抓取桌面壁纸并模糊后放在卡片后面，因此它的颜色会跟随实际壁纸，同时 Electron 窗口保持不透明且可交互。如果无法挂载到 Windows 桌面层，组件会自动禁用；应用不会退回到普通顶层窗口。
 
-## 安装
+## 下载与安装
 
-### 下载安装包
+### Windows
 
-[Windows / Linux / macOS](https://github.com/zuntek/weektodoweb/releases/latest)
+从 [Releases](https://github.com/11HAN/weektodo/releases/latest) 下载最新版安装包：
 
-### 第三方商店
+- `WeekToDo Setup 2.2.0.exe`（x64）
 
-#### Windows
+双击安装后，应用会直接以桌面组件运行。通过托盘菜单可以打开设置、开关组件或退出。
 
-[Uptodown](https://weektodo.uptodown.com/windows)
+> 安装包暂未签名，Windows SmartScreen 可能会提示；选择“更多信息 → 仍要运行”即可。
 
-#### macOS
+### 系统要求
 
-[Macupdate](https://www.macupdate.com/app/mac/63506/weektodo)
+- Windows 10 / 11（x64）
+- 安装包已包含 Electron，无需单独安装运行时
 
-#### Linux
+当前版本没有 macOS / Linux 安装包。
 
-可以通过命令行安装 Snapd：
+## 从源码构建
 
-```bash
-sudo apt update
-sudo apt install snapd
-```
+### 环境要求
 
-安装 WeekToDo 只需执行：
+- Windows 10 / 11
+- [Node.js](https://nodejs.org/)（本仓库在 Node 24 下验证；其他版本可能需要 `yarn install --ignore-engines`）
+- [Yarn](https://yarnpkg.com/)
+- Git
 
-```bash
-sudo snap install weektodo
-```
+### 构建步骤
 
-## 从源码构建和运行
-
-如果你想了解 WeekToDo 的工作原理，或想调试某个问题，可以获取源码并在本地构建运行。
-
-### 安装依赖
-
-需要 git、较新版本的 [Node.js](https://nodejs.org/en/)（目前推荐 v16.x）、[Yarn](https://yarnpkg.com/) 和 [Electron](https://www.electronjs.org/)。
-
-```
+```powershell
 git clone https://github.com/11HAN/weektodo
 cd weektodo
-yarn install
-yarn run serve // 运行网页版
-yarn run electron:serve // 运行桌面版
+yarn install --ignore-engines
+yarn lint
+
+$env:NODE_OPTIONS='--openssl-legacy-provider'
+yarn electron:build
 ```
 
-上游项目：[manuelernestog/weektodo](https://github.com/manuelernestog/weektodo)。
+产物：
 
-### Docker
+- 安装包：`dist_electron\WeekToDo Setup 2.2.0.exe`
+- 免安装目录：`dist_electron\win-unpacked\WeekToDo.exe`
 
-运行开发网页版：`docker-compose up`
+只想生成免安装目录时，使用 `yarn electron:build --dir`。打包前请先退出正在运行的 WeekToDo。
 
-## 支持项目
+## 参考与致谢
 
-你可以通过多种方式支持这个项目：
+- [manuelernestog/weektodo](https://github.com/manuelernestog/weektodo) — 原版 WeekToDo，本分支的上游项目。
+- [Pia-JI/Desktop-Todo-Calendar](https://github.com/Pia-JI/Desktop-Todo-Calendar) — 桌面常驻待办日历，毛玻璃（Mica / Acrylic）外观和桌面交互的参考。
+- [archisvaze/liquid-glass](https://github.com/archisvaze/liquid-glass) — 液态玻璃边缘折射的参考实现（MIT 许可），原始声明保留在 `src/helpers/liquidGlass.js`。
 
-### 捐赠
+## 参与贡献
 
-https://weektodo.me/support-us
+WeekToDo 是开源的，欢迎 Pull Request 和贡献！有两种参与方式：领取一个已标记为 `accepted` 的[缺陷报告](https://github.com/manuelernestog/weektodo/issues?q=is%3Aopen+is%3Aissue+label%3Abug)或[功能建议](https://github.com/manuelernestog/weektodo/issues?q=is%3Aissue+is%3Aopen+label%3Afeature)，然后开始处理。
 
-### 分享
-
-- [Facebook](https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweektodo.me%2F)
-- [Twitter](https://twitter.com/intent/tweet?url=https%3A%2F%2Fweektodo.me%2F&text=)
-- [Linkedin](https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fweektodo.me%2F&title=)
-
-### 给应用评分
-
-- [ProductHunt](https://www.producthunt.com/posts/weektodo)
-- [AlternativeTo](https://alternativeto.net/software/weektodo/about/)
-- [SassHub](https://www.saashub.com/weektodo-reviews/new)
+更多信息请阅读 [Contributing.md](/CONTRIBUTING.md)。
 
 ### 翻译
 
 目前系统已支持多种语言。你可以提交错误修正，也可以添加尚未支持的语言。
 
-英文基础文件在[这里](src/assets/languages/en.json/)。
+英文基础文件在[这里](src/assets/languages/en.json)。
 
-要添加新语言，请 Fork 仓库并创建 Pull Request，新增一个基于 `translations/en.json` 的文件，并按照[语言代码](https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469)命名。
+要添加新语言，请 Fork 仓库并创建 Pull Request，新增一个基于 `src/assets/languages/en.json` 的文件，并按照[语言代码](https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469)命名。
 
-如果这太麻烦，也可以下载这个[文件](src/assets/languages/en.json/)，翻译后发送到 contact@weektodo.me。
-
-## 参与贡献
-
-WeekToDo 是开源的，欢迎 Pull Request 和贡献！有三种参与方式：领取一个已标记为 `accepted` 的[缺陷报告](https://github.com/manuelernestog/weektodo/issues?q=is%3Aopen+is%3Aissue+label%3Abug)或[功能建议](https://github.com/manuelernestog/weektodo/issues?q=is%3Aissue+is%3Aopen+label%3Afeature)，然后开始处理。
-
-更多信息请阅读 [Contributing.md](/CONTRIBUTING.md)。
+如果这太麻烦，也可以下载这个[文件](src/assets/languages/en.json)，翻译后发送到 contact@weektodo.me。
 
 ## 许可证
 

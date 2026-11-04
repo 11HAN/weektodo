@@ -1,15 +1,17 @@
 **English** | [简体中文](README.md)
 
 # WeekToDo | FOSS Minimalist Weekly Planner
+
 ---
-![GitHub all releases](https://img.shields.io/github/downloads/zuntek/weektodoweb/total) 
+
+![GitHub all releases](https://img.shields.io/github/downloads/11HAN/weektodo/total)
 [![vue3](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://vuejs.org/)
 
-WeekToDo is a free minimalist weekly planner app focused on privacy. Schedule your tasks and projects with to do lists and a calendar. Available for Windows, Mac, Linux or online.
+WeekToDo is a free minimalist weekly planner app focused on privacy. Schedule your tasks and projects with to-do lists and a calendar.
 
-> This fork adds an interactive Windows desktop widget, liquid-glass themes, system-font selection, and several desktop-oriented layout improvements to the original WeekToDo app.
+> This fork turns the weekly view into a widget that lives on the Windows desktop, and adds liquid-glass themes, system-font selection, and several desktop-oriented layout improvements. It is Windows-only and is based on the [original WeekToDo](https://github.com/manuelernestog/weektodo).
 
-![Logo](https://weektodo.me/weektodo-preview.webp)
+[![Download for Windows](https://img.shields.io/badge/Download-Windows-2ea44f?logo=windows)](https://github.com/11HAN/weektodo/releases/latest)
 
 ## Screenshots
 
@@ -31,11 +33,10 @@ WeekToDo is a free minimalist weekly planner app focused on privacy. Schedule yo
 
 ## Features
 
-- Cross platform
+- Interactive Windows desktop widget (attached to the desktop layer and still visible after Win+D)
 - Light/dark mode toggle
 - Custom To-do Lists
 - Drag and Drop
-- Optional interactive Windows desktop widget
 - Liquid-glass, frosted, acrylic and paper desktop themes
 - System font family, font colour and font weight selection
 - Live config sync between the widget and settings windows
@@ -52,7 +53,7 @@ WeekToDo is a free minimalist weekly planner app focused on privacy. Schedule yo
 ## Roadmap
 
 - Touch mode
-- Mobile Version
+- Multi-monitor support
 - Sync across devices
 - Workspaces
 
@@ -83,141 +84,94 @@ WeekToDo is an GPL-licensed open source project with its ongoing development mad
   </a>
 </p>
 
-  
 ## Desktop Widget (Windows)
 
-On Windows, WeekToDo can run a second, compact weekly view directly on the
-desktop. It is attached to the shell's desktop tree (`SHELLDLL_DefView`) rather
-than being faked with an always-on-top or "lowered" window, so it stays below
-normal application windows and survives Win+D. It is placed above the desktop
-icon list inside its own rectangle so mouse clicks, text input and task drag and
-drop continue to work.
+On Windows, WeekToDo runs a compact weekly view directly on the desktop. It is attached to the shell's desktop tree (`SHELLDLL_DefView`) rather than being faked with an always-on-top or "lowered" window, so it stays below normal application windows and survives Win+D. It is placed above the desktop icon list inside its own rectangle so mouse clicks, text input and task drag and drop continue to work.
 
-On Windows the app starts as the desktop widget only; the old normal WeekToDo
-window is no longer created. Use the tray menu to open settings, toggle the
-widget, or quit.
+The app starts as the desktop widget only; the old normal WeekToDo window is no longer created. Use the tray menu to open settings, toggle the widget, or quit.
 
-- Drag the widget by its header when it is unlocked. The header is a pure drag
-  handle; the top edge and top corners are not resize zones.
-- The padlock button locks/unlocks position and resizing. While locked, the
-  weekly panes, tasks, and buttons still receive clicks normally.
-- Resize from the left/right edges, the bottom edge, and the two bottom corners.
-  Position and size are remembered.
-- The widget always shows exactly seven days, starting on Monday or Sunday as
-  configured under Settings -> Desktop widget.
-- Add tasks by clicking the empty area below a day's tasks or from the three-dot
-  menu. There is no persistent new-task button in the desktop widget.
-- Each day's task list scrolls with the mouse wheel while the outer card stays
-  fixed. Scrollbars are hidden, and the day header and input area stay in place.
-  The widget can be reduced to 320 DIP height.
-- The gear button and the tray Settings entry open a separate, frameless,
-  resizeable settings window. Its top "设置" bar is draggable and contains the
-  close button.
-- Appearance includes frosted, acrylic, paper, liquid-glass clear, liquid-glass
-  white, and liquid-glass dark themes, plus a live opacity slider. The
-  liquid-glass themes use SVG refraction on the outer card, header, and day
-  columns together with CSS specular highlights.
-- Display settings can pick an installed Windows font family, a custom font
-  colour, and a font weight from 300 to 1000. Settings are saved and synced live
-  across the widget and settings windows.
-- Wrapped task text uses a hanging indent, and the hover details card stays
-  opaque for readability.
-- The palette-style button in older builds has been replaced by the gear
-  settings button.
+- Drag the widget by its header when it is unlocked. The header is a pure drag handle; the top edge and top corners are not resize zones.
+- The padlock button locks/unlocks position and resizing. While locked, the weekly panes, tasks, and buttons still receive clicks normally.
+- Resize from the left/right edges, the bottom edge, and the two bottom corners. Position and size are remembered.
+- The widget always shows exactly seven days, starting on Monday or Sunday as configured under Settings -> Desktop widget.
+- Add tasks by clicking the empty area below a day's tasks or from the three-dot menu. There is no persistent new-task button in the desktop widget.
+- Each day's task list scrolls with the mouse wheel while the outer card stays fixed. Scrollbars are hidden, and the day header and input area stay in place. The widget can be reduced to 320 DIP height.
+- The gear button and the tray Settings entry open a separate, frameless, resizeable settings window. Its top "设置" bar is draggable and contains the close button.
+- Appearance includes frosted, acrylic, paper, liquid-glass clear, liquid-glass white, and liquid-glass dark themes, plus a live opacity slider. The liquid-glass themes use SVG refraction on the outer card, header, and day columns together with CSS specular highlights.
+- Display settings can pick an installed Windows font family, a custom font colour, and a font weight from 300 to 1000. Settings are saved and synced live across the widget and settings windows.
+- Wrapped task text uses a hanging indent, and the hover details card stays opaque for readability.
+- The palette-style button in older builds has been replaced by the gear settings button.
 
-The widget samples the desktop wallpaper through `PrintWindow(Progman)` and
-blurs it behind the card, so its colours follow the actual wallpaper while the
-Electron window stays opaque and interactive. The widget is disabled
-automatically if the Windows desktop layer cannot be attached; the app does not
-fall back to a normal top-level window.
+The widget samples the desktop wallpaper through `PrintWindow(Progman)` and blurs it behind the card, so its colours follow the actual wallpaper while the Electron window stays opaque and interactive. The widget is disabled automatically if the Windows desktop layer cannot be attached; the app does not fall back to a normal top-level window.
 
-## Installation
+## Download and Installation
 
-### Download installer 
+### Windows
 
-[Windows / Linux / macOS](https://github.com/zuntek/weektodoweb/releases/latest
-) 
+Download the latest installer from [Releases](https://github.com/11HAN/weektodo/releases/latest):
 
-### External Stores
+- `WeekToDo Setup 2.2.0.exe` (x64)
 
-#### Windows 
+After installation, the app starts directly as the desktop widget. Use the tray menu to open settings, toggle the widget, or quit.
 
-[Uptodown](https://weektodo.uptodown.com/windows)
+> The installer is not code-signed, so Windows SmartScreen may warn you. Choose "More info" -> "Run anyway" to continue.
 
-#### macOS 
+### Requirements
 
-[Macupdate](https://www.macupdate.com/app/mac/63506/weektodo)
+- Windows 10 / 11 (x64)
+- The installer bundles Electron, so no separate runtime is required
 
-#### Linux 
+There are currently no macOS or Linux builds.
 
-Snapd can be installed from the command line:
+## Build From Source
 
-```bash
-sudo apt update
-sudo apt install snapd
-```
-To install WeekToDo, simply use the following command:
-```bash
-sudo snap install weektodo
-```    
+### Requirements
 
-## Build and Run From Source
+- Windows 10 / 11
+- [Node.js](https://nodejs.org/) (tested with Node 24; other versions may need `yarn install --ignore-engines`)
+- [Yarn](https://yarnpkg.com/)
+- Git
 
-If you want to understand how WeekToDo works or want to debug an issue, you'll want to get the source, build it, and run it locally.
+### Steps
 
-### Installing Prerequisites
-
-You'll need git, a recent version of [Node.JS](https://nodejs.org/en/) (currently v16.X is recommended), [Yarn](https://yarnpkg.com/) and [Electron](https://www.electronjs.org/).
-
-```
+```powershell
 git clone https://github.com/11HAN/weektodo
 cd weektodo
-yarn install
-yarn run serve // to run web version
-yarn run electron:serve // to run native version
+yarn install --ignore-engines
+yarn lint
+
+$env:NODE_OPTIONS='--openssl-legacy-provider'
+yarn electron:build
 ```
 
-Upstream project: [manuelernestog/weektodo](https://github.com/manuelernestog/weektodo).
+Output:
 
-### Docker
+- Installer: `dist_electron\WeekToDo Setup 2.2.0.exe`
+- Unpacked build: `dist_electron\win-unpacked\WeekToDo.exe`
 
- To run the development web version use `docker-compose up`
+Use `yarn electron:build --dir` to produce only the unpacked build. Quit any running WeekToDo instance before packaging.
+
+## References and Credits
+
+- [manuelernestog/weektodo](https://github.com/manuelernestog/weektodo) — the original WeekToDo project this fork is based on.
+- [Pia-JI/Desktop-Todo-Calendar](https://github.com/Pia-JI/Desktop-Todo-Calendar) — a desktop todo calendar that served as a reference for the frosted-glass (Mica / Acrylic) look and desktop interaction.
+- [archisvaze/liquid-glass](https://github.com/archisvaze/liquid-glass) — the MIT-licensed reference implementation for liquid-glass edge refraction. The original notice is kept in `src/helpers/liquidGlass.js`.
 
 ## Contributing
 
-You can support this project in several ways:
+WeekToDo is open-source. Pull requests and contributions are welcome! There are two ways to contribute: grab a [bug report](https://github.com/manuelernestog/weektodo/issues?q=is%3Aopen+is%3Aissue+label%3Abug) or [feature suggestion](https://github.com/manuelernestog/weektodo/issues?q=is%3Aissue+is%3Aopen+label%3Afeature) that has been marked `accepted` and dig in.
 
-### Donate
-
-https://weektodo.me/support-us
-
-### Share
-
-- [Facebook](https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweektodo.me%2F)
-- [Twitter](https://twitter.com/intent/tweet?url=https%3A%2F%2Fweektodo.me%2F&text=)
-- [Linkedin](https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fweektodo.me%2F&title=)
-
-### Rate the app
-
-- [ProductHunt](https://www.producthunt.com/posts/weektodo)
-- [AlternativeTo](https://alternativeto.net/software/weektodo/about/)
-- [SassHub](https://www.saashub.com/weektodo-reviews/new)
+Read [Contributing.md](/CONTRIBUTING.md) for more information.
 
 ### Translations
 
 Currently the system is developed in multiple languages, you can send me a correction of any error or you can add your language if it's not available.
 
-You can find the base file with all the used words in english [here](src/assets/languages/en.json/)
+You can find the base file with all the used words in english [here](src/assets/languages/en.json).
 
-For add a new language Fork the repo and create a Pull Request creating a new file of the `translations/en.json` and name he file acording the [language code](https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469). 
+For add a new language Fork the repo and create a Pull Request creating a new file based on `src/assets/languages/en.json` and name the file according to the [language code](https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469).
 
-If this is to dificult, you can donwload this [file](src/assets/languages/en.json/), translate it and send the file to the email contact@weektodo.me
- 
-## Contributing
-
-Weektodo is open-source. Pull requests and contributions are welcome! There are three ways to contribute: grab a [bug report](https://github.com/manuelernestog/issues?q=is%3Aopen+is%3Aissue+label%3Abug) or [feature suggestion](https://github.com/manuelernestog/issues?q=is%3Aissue+is%3Aopen+label%3Afeature) that has been marked `accepted` and dig in.
-
-Read [Contributing.md](/CONTRIBUTING.md) for more information.
+If this is too difficult, you can download this [file](src/assets/languages/en.json), translate it and send the file to contact@weektodo.me
 
 ## License
 
@@ -242,8 +196,4 @@ MIT notice is kept in `src/helpers/liquidGlass.js`.
   <img src="https://contrib.rocks/image?repo=manuelernestog/weektodo" />
 </a>
 
-
-
 Made with [contrib.rocks](https://contrib.rocks).
-
-  
