@@ -747,22 +747,48 @@ function focusWindow(state) {
   return true;
 }
 
-function detachWindow(state) {
+function detachWindow(state, options = {}) {
   if (!state || !state.hwnd) return;
   const a = loadApi();
   if (!a.IsWindow(state.hwnd)) return;
 
-  a.SetWindowRgn(state.hwnd, null, 1);
+  if (!options.keepRegion) a.SetWindowRgn(state.hwnd, null, 1);
   restoreWindowStyle(state);
+
+  // The saved BrowserWindow style can still carry frame bits. A detached
+  // widget must stay frameless and out of Alt+Tab while it is a normal
+  // top-level window for IME text editing.
+  const topLevelStyle =
+    (toNumber(a.GetWindowLongPtrW(state.hwnd, GWL_STYLE)) &
+      ~(
+        WS_CAPTION |
+        WS_THICKFRAME |
+        WS_SYSMENU |
+        WS_MINIMIZEBOX |
+        WS_MAXIMIZEBOX
+      )) |
+    WS_POPUP |
+    WS_CLIPSIBLINGS;
+  a.SetWindowLongPtrW(state.hwnd, GWL_STYLE, topLevelStyle);
+
+  const exStyle = toNumber(a.GetWindowLongPtrW(state.hwnd, GWL_EXSTYLE));
+  a.SetWindowLongPtrW(
+    state.hwnd,
+    GWL_EXSTYLE,
+    (exStyle & ~WS_EX_APPWINDOW) | WS_EX_TOOLWINDOW
+  );
+
   a.SetParent(state.hwnd, state.saved.parent || null);
+
+  const bounds = options.screenBounds || state.screenBounds;
   a.SetWindowPos(
     state.hwnd,
     null,
-    0,
-    0,
-    0,
-    0,
-    SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_FRAMECHANGED
+    bounds ? Math.round(bounds.x) : 0,
+    bounds ? Math.round(bounds.y) : 0,
+    bounds ? Math.round(bounds.width) : 0,
+    bounds ? Math.round(bounds.height) : 0,
+    SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW
   );
   a.ShowWindow(state.hwnd, SW_SHOW);
 }

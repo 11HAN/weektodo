@@ -22,7 +22,7 @@ import "./assets/style/main.scss";
 import "./assets/style/uiComponents.scss";
 
 import { onDesktopSync } from "./helpers/desktopSync";
-import { IS_DESKTOP_MODE, applyDesktopConfig } from "./helpers/desktopMode";
+import { IS_DESKTOP_MODE, IS_DESKTOP_SETTINGS_WINDOW, applyDesktopConfig } from "./helpers/desktopMode";
 
 Sentry.init({
   dsn: process.env.VUE_APP_SENTRY_DNS,
@@ -85,16 +85,145 @@ if (typeof require !== "undefined") {
   }
 }
 
-if (IS_DESKTOP_MODE && typeof require !== "undefined") {
+if (IS_DESKTOP_MODE && !IS_DESKTOP_SETTINGS_WINDOW && typeof require !== "undefined") {
   try {
     const { ipcRenderer } = require("electron");
+
+    const TEXT_INPUT_SELECTOR = [
+      "textarea",
+      '[contenteditable="true"]',
+      "input:not([type])",
+      'input[type="text"]',
+      'input[type="search"]',
+      'input[type="email"]',
+      'input[type="url"]',
+      'input[type="tel"]',
+      'input[type="password"]',
+      'input[type="number"]',
+      'input[type="date"]',
+      'input[type="time"]',
+      'input[type="datetime-local"]',
+      'input[type="month"]',
+      'input[type="week"]',
+    ].join(", ");
+
+    const TEXT_LAUNCHER_SELECTOR = ".fake-drop-zone, .new-todo-row, .fake-lines";
+
+    let textEditing = false;
+    let textEditEndTimer = null;
+    let textEditStartedAt = 0;
+    let textEditTransitioning = false;
+    let textEditTransitionTimer = null;
+
+    const isTextInput = (target) =>
+      !!(target && target.closest && target.closest(TEXT_INPUT_SELECTOR));
+
+    const isTextLauncher = (target) =>
+      !!(target && target.closest && target.closest(TEXT_LAUNCHER_SELECTOR));
+
+    const beginTextEdit = () => {
+      if (textEditing) return;
+      textEditing = true;
+      textEditStartedAt = Date.now();
+      textEditTransitioning = true;
+      clearTimeout(textEditTransitionTimer);
+      textEditTransitionTimer = setTimeout(() => {
+        textEditTransitioning = false;
+      }, 450);
+      ipcRenderer.send("desktop-widget-text-edit-start");
+    };
+
+    const endTextEdit = () => {
+      if (!textEditing) return;
+      textEditing = false;
+      textEditTransitioning = false;
+      ipcRenderer.send("desktop-widget-text-edit-end");
+    };
+
+    const scheduleTextEditEnd = () => {
+      clearTimeout(textEditEndTimer);
+      textEditEndTimer = setTimeout(() => {
+        if (isTextInput(document.activeElement)) return;
+        endTextEdit();
+      }, 120);
+    };
+
+    // Reparenting the native window can blur the focused input for one frame.
+    // Keep that transient blur away from the components (which would commit or
+    // close the editor) and restore focus once the window is top-level.
+    const keepInputFocusDuringTransition = (event) => {
+      if (!textEditTransitioning || !isTextInput(event.target)) return false;
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      const input = event.target;
+      const refocus = () => {
+        if (!textEditing || !input.isConnected) return;
+        const active = document.activeElement;
+        if (active && active !== input && active !== document.body) return;
+        if (typeof input.focus === "function") input.focus({ preventScroll: true });
+        if (typeof input.setSelectionRange === "function") {
+          const end = input.value ? input.value.length : 0;
+          try {
+            input.setSelectionRange(end, end);
+          } catch (error) {
+            // Some input types do not support selection ranges.
+          }
+        }
+      };
+      setTimeout(refocus, 30);
+      setTimeout(refocus, 130);
+      setTimeout(refocus, 280);
+      return true;
+    };
+
     window.addEventListener(
       "mousedown",
-      () => {
+      (event) => {
+        if (
+          event.button === 0 &&
+          (isTextInput(event.target) || isTextLauncher(event.target))
+        ) {
+          beginTextEdit();
+        }
         ipcRenderer.send("desktop-widget-focus");
       },
       true
     );
+
+    window.addEventListener(
+      "focusin",
+      (event) => {
+        if (isTextInput(event.target)) beginTextEdit();
+      },
+      true
+    );
+
+    window.addEventListener(
+      "focusout",
+      (event) => {
+        if (keepInputFocusDuringTransition(event)) return;
+        if (isTextInput(event.target)) scheduleTextEditEnd();
+      },
+      true
+    );
+
+    window.addEventListener(
+      "blur",
+      (event) => {
+        if (keepInputFocusDuringTransition(event)) return;
+      },
+      true
+    );
+
+    window.addEventListener("blur", () => {
+      clearTimeout(textEditEndTimer);
+      textEditEndTimer = setTimeout(() => {
+        // The detach itself can briefly blur the window; ignore that.
+        if (Date.now() - textEditStartedAt < 500) return;
+        if (!document.hasFocus()) endTextEdit();
+        else scheduleTextEditEnd();
+      }, 150);
+    });
   } catch (error) {
     console.warn("Desktop keyboard focus bridge is unavailable", error);
   }

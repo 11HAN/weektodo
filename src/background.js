@@ -29,6 +29,7 @@ let desktopBackdropData = null;
 let stopDesktopWatchdog = null;
 let desktopRecreateTimer = null;
 let desktopWidgetStopping = false;
+let desktopTextEditing = false;
 let desktopMoveSession = null;
 let desktopWidgetErrorShown = false;
 var tray = null;
@@ -193,6 +194,7 @@ function getDesktopWidgetBounds() {
 async function createDesktopWindow() {
   if (!desktopLayer.isSupported() || !config.get("desktopWidget")) return;
   if (desktopWindow && !desktopWindow.isDestroyed()) return;
+  desktopTextEditing = false;
 
   const widgetBounds = getDesktopWidgetBounds();
 
@@ -334,6 +336,67 @@ function attachDesktopWindow() {
   }
 }
 
+/**
+ * The widget is a native child of the desktop's SHELLDLL_DefView. Some IMEs
+ * (notably WeType / Microsoft Pinyin with TSF) cannot resolve the caret
+ * position for a reparented child window and fall back to the top-left corner
+ * of the screen. While a text input is being edited we temporarily make the
+ * window a normal top-level window at the same screen rectangle; the IME then
+ * anchors its candidate window to the caret. It is reattached as soon as the
+ * input loses focus.
+ */
+function startDesktopTextEdit(event) {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win !== desktopWindow || !desktopAttachment || desktopTextEditing) return;
+
+  const bounds = desktopAttachment.screenBounds;
+  if (!bounds) return;
+
+  desktopTextEditing = true;
+  if (stopDesktopWatchdog) {
+    stopDesktopWatchdog();
+    stopDesktopWatchdog = null;
+  }
+
+  try {
+    desktopLayer.detachWindow(desktopAttachment, {
+      screenBounds: bounds,
+      keepRegion: true,
+    });
+    desktopWindow.setSkipTaskbar(true);
+    desktopWindow.setAlwaysOnTop(false);
+    desktopWindow.focus();
+    desktopWindow.webContents.focus();
+    desktopLog("text edit: detached to top level for IME");
+  } catch (error) {
+    desktopTextEditing = false;
+    desktopLog(
+      `text edit detach failed: ${error && error.stack ? error.stack : error}`
+    );
+    startDesktopWatchdog();
+  }
+}
+
+function finishDesktopTextEdit() {
+  if (!desktopTextEditing) return;
+  desktopTextEditing = false;
+
+  const restoreFocus =
+    desktopWindow && !desktopWindow.isDestroyed() && desktopWindow.isFocused();
+
+  attachDesktopWindow();
+  if (restoreFocus && desktopAttachment) {
+    desktopLayer.focusWindow(desktopAttachment);
+  }
+  desktopLog("text edit: reattached to desktop layer");
+}
+
+function stopDesktopTextEdit(event) {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win !== desktopWindow) return;
+  finishDesktopTextEdit();
+}
+
 function repositionDesktopWidget() {
   if (!desktopAttachment) return;
   const b = getDesktopWidgetBounds();
@@ -442,6 +505,7 @@ function scheduleDesktopRecreate() {
 function stopDesktopWidget() {
   stopDesktopMove(false);
   desktopWidgetStopping = true;
+  desktopTextEditing = false;
   if (desktopRecreateTimer) {
     clearTimeout(desktopRecreateTimer);
     desktopRecreateTimer = null;
@@ -466,6 +530,7 @@ function stopDesktopWidget() {
 }
 
 function startDesktopMove(mode, direction) {
+  if (desktopTextEditing) return;
   if (!desktopAttachment || desktopMoveSession) return;
 
   const rect = desktopLayer.getWindowScreenRect(desktopAttachment);
@@ -614,6 +679,8 @@ function updateTrayMenu() {
 function registerDesktopIpc() {
   ipcMain.on("is-windows-visible", isWindowsVisible);
   ipcMain.on("desktop-widget-focus", focusDesktopWidget);
+  ipcMain.on("desktop-widget-text-edit-start", startDesktopTextEdit);
+  ipcMain.on("desktop-widget-text-edit-end", stopDesktopTextEdit);
   ipcMain.on("desktop-backdrop-request", sendDesktopBackdrop);
   ipcMain.on("desktop-widget-drag-start", () => startDesktopMove("move"));
   ipcMain.on("desktop-widget-resize-start", (_event, direction) =>
