@@ -30,6 +30,8 @@ let stopDesktopWatchdog = null;
 let desktopRecreateTimer = null;
 let desktopWidgetStopping = false;
 let desktopTextEditing = false;
+let desktopTopLevel = false;
+let desktopShellTimer = null;
 let desktopMoveSession = null;
 let desktopWidgetErrorShown = false;
 var tray = null;
@@ -195,6 +197,7 @@ async function createDesktopWindow() {
   if (!desktopLayer.isSupported() || !config.get("desktopWidget")) return;
   if (desktopWindow && !desktopWindow.isDestroyed()) return;
   desktopTextEditing = false;
+  desktopTopLevel = false;
 
   const widgetBounds = getDesktopWidgetBounds();
 
@@ -248,6 +251,7 @@ async function createDesktopWindow() {
     desktopWindow.showInactive();
     sendDesktopBackdrop();
     attachDesktopWindow();
+    startDesktopShellWatcher();
     setTimeout(sendDesktopBackdrop, 800);
   });
 
@@ -337,34 +341,131 @@ function attachDesktopWindow() {
 }
 
 /**
- * The widget is a native child of the desktop's SHELLDLL_DefView. Some IMEs
- * (notably WeType / Microsoft Pinyin with TSF) cannot resolve the caret
- * position for a reparented child window and fall back to the top-left corner
- * of the screen. While a text input is being edited we temporarily make the
- * window a normal top-level window at the same screen rectangle; the IME then
- * anchors its candidate window to the caret. It is reattached as soon as the
- * input loses focus.
+ * While the Windows desktop is the active context, keep the widget as a
+ * normal top-level window. Chromium only reports the caret position to the
+ * IME when its window is an active top-level window; a native child of
+ * SHELLDLL_DefView falls back to the screen origin. As soon as another
+ * application takes the foreground, the widget is reattached to the desktop
+ * tree so it keeps its real desktop-layer behaviour.
  */
+function isDesktopForeground() {
+  const foreground = desktopLayer.getForegroundWindowInfo();
+  if (!foreground || !foreground.className) return false;
+
+  if (
+    foreground.className === "Progman" ||
+    foreground.className === "WorkerW" ||
+    foreground.className === "SHELLDLL_DefView" ||
+    foreground.className === "Shell_TrayWnd"
+  ) {
+    return true;
+  }
+
+  return !!(
+    desktopAttachment &&
+    foreground.hwnd === desktopAttachment.hwnd
+  );
+}
+
+function setDesktopTopLevel(enabled) {
+  if (enabled) {
+    if (
+      desktopTopLevel ||
+      !desktopAttachment ||
+      !desktopWindow ||
+      desktopWindow.isDestroyed()
+    ) {
+      return;
+    }
+    if (stopDesktopWatchdog) {
+      stopDesktopWatchdog();
+      stopDesktopWatchdog = null;
+    }
+    try {
+      desktopLayer.detachWindow(desktopAttachment, {
+        screenBounds: desktopAttachment.screenBounds,
+        keepRegion: true,
+      });
+      desktopTopLevel = true;
+      desktopWindow.setSkipTaskbar(true);
+      desktopWindow.setAlwaysOnTop(false);
+      desktopLog("shell mode: top-level while desktop is active");
+    } catch (error) {
+      desktopTextEditing = false;
+      desktopLog(
+        `shell mode detach failed: ${error && error.stack ? error.stack : error}`
+      );
+      startDesktopWatchdog();
+    }
+    return;
+  }
+
+  if (!desktopTopLevel) return;
+  desktopTopLevel = false;
+  attachDesktopWindow();
+  desktopLog("shell mode: reattached to desktop layer");
+}
+
+function syncDesktopShellMode() {
+  if (!desktopAttachment || !desktopWindow || desktopWindow.isDestroyed()) return;
+  if (desktopWidgetStopping || app.isQuiting) return;
+  if (desktopTextEditing) return;
+
+  const desktopActive = isDesktopForeground();
+  if (desktopActive && !desktopTopLevel) {
+    setDesktopTopLevel(true);
+  } else if (!desktopActive && desktopTopLevel) {
+    setDesktopTopLevel(false);
+  }
+}
+
+function startDesktopShellWatcher() {
+  if (desktopShellTimer) clearInterval(desktopShellTimer);
+  desktopShellTimer = setInterval(syncDesktopShellMode, 250);
+}
+
+function stopDesktopShellWatcher() {
+  if (desktopShellTimer) {
+    clearInterval(desktopShellTimer);
+    desktopShellTimer = null;
+  }
+}
+
 function startDesktopTextEdit(event) {
   const win = BrowserWindow.fromWebContents(event.sender);
   if (win !== desktopWindow || !desktopAttachment || desktopTextEditing) return;
 
-  const bounds = desktopAttachment.screenBounds;
-  if (!bounds) return;
-
   desktopTextEditing = true;
-  if (stopDesktopWatchdog) {
-    stopDesktopWatchdog();
-    stopDesktopWatchdog = null;
+
+  if (!desktopTopLevel) {
+    const bounds = desktopAttachment.screenBounds;
+    if (!bounds) {
+      desktopTextEditing = false;
+      return;
+    }
+    if (stopDesktopWatchdog) {
+      stopDesktopWatchdog();
+      stopDesktopWatchdog = null;
+    }
+    try {
+      desktopLayer.detachWindow(desktopAttachment, {
+        screenBounds: bounds,
+        keepRegion: true,
+      });
+      desktopTopLevel = true;
+      desktopWindow.setSkipTaskbar(true);
+      desktopWindow.setAlwaysOnTop(false);
+    } catch (error) {
+      desktopTextEditing = false;
+      desktopLog(
+        `text edit detach failed: ${error && error.stack ? error.stack : error}`
+      );
+      startDesktopWatchdog();
+      return;
+    }
   }
 
   try {
-    desktopLayer.detachWindow(desktopAttachment, {
-      screenBounds: bounds,
-      keepRegion: true,
-    });
-    desktopWindow.setSkipTaskbar(true);
-    desktopWindow.setAlwaysOnTop(false);
     // Electron's focus() does not always beat Windows' foreground lock when
     // the window was just reparented. Move focus through user32 as well so
     // Chromium is the active window and reports the caret to the IME.
@@ -375,21 +476,28 @@ function startDesktopTextEdit(event) {
     const parent = desktopLayer.getParentWindowInfo(desktopAttachment);
     const rect = desktopLayer.getWindowScreenRect(desktopAttachment);
     desktopLog(
-      `text edit: detached parent=${parent && parent.className} ` +
+      `text edit: ${desktopTopLevel ? "top-level ready" : "attached"} ` +
+        `parent=${parent && parent.className} ` +
         `foreground=${foreground.className} rect=${JSON.stringify(rect)}`
     );
   } catch (error) {
-    desktopTextEditing = false;
     desktopLog(
-      `text edit detach failed: ${error && error.stack ? error.stack : error}`
+      `text edit focus failed: ${error && error.stack ? error.stack : error}`
     );
-    startDesktopWatchdog();
   }
 }
 
 function finishDesktopTextEdit() {
   if (!desktopTextEditing) return;
   desktopTextEditing = false;
+
+  // Staying top-level while the desktop remains active avoids a reparent and
+  // repaint between two consecutive task edits. The shell watcher reattaches
+  // the window once another application gets the foreground.
+  if (desktopTopLevel) {
+    desktopLog("text edit: kept top-level");
+    return;
+  }
 
   const restoreFocus =
     desktopWindow && !desktopWindow.isDestroyed() && desktopWindow.isFocused();
@@ -516,6 +624,8 @@ function stopDesktopWidget() {
   stopDesktopMove(false);
   desktopWidgetStopping = true;
   desktopTextEditing = false;
+  desktopTopLevel = false;
+  stopDesktopShellWatcher();
   if (desktopRecreateTimer) {
     clearTimeout(desktopRecreateTimer);
     desktopRecreateTimer = null;
@@ -545,7 +655,19 @@ function startDesktopMove(mode, direction) {
 
   const rect = desktopLayer.getWindowScreenRect(desktopAttachment);
   const cursor = desktopLayer.getCursorPosition();
-  const parentRect = desktopLayer.getWindowScreenRect(desktopAttachment.target);
+  let parentRect;
+  if (desktopAttachment.topLevel) {
+    const display = screen.getPrimaryDisplay();
+    const displayScale = display.scaleFactor || 1;
+    parentRect = {
+      x: Math.round(display.bounds.x * displayScale),
+      y: Math.round(display.bounds.y * displayScale),
+      width: Math.round(display.bounds.width * displayScale),
+      height: Math.round(display.bounds.height * displayScale),
+    };
+  } else {
+    parentRect = desktopLayer.getWindowScreenRect(desktopAttachment.target);
+  }
   if (!rect || !cursor || !parentRect) return;
 
   desktopLog(

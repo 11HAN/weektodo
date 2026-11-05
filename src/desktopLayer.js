@@ -624,6 +624,7 @@ function attachWindow(win, bounds, options = {}) {
     targetMode: targetInfo.mode,
     saved,
     interactive,
+    topLevel: false,
     radius: options.radius || 0,
     bounds: { x: 0, y: 0, width: 1, height: 1 },
     screenBounds: { x: 0, y: 0, width: 1, height: 1 },
@@ -639,7 +640,9 @@ function setWindowScreenBounds(state, bounds) {
   const a = loadApi();
   if (!a.IsWindow(state.hwnd)) return;
 
-  const parentRect = getRect(state.target) || { left: 0, top: 0 };
+  const parentRect = state.topLevel
+    ? { left: 0, top: 0 }
+    : getRect(state.target) || { left: 0, top: 0 };
   const width = Math.max(1, Math.round(bounds.width));
   const height = Math.max(1, Math.round(bounds.height));
   const screenX = Math.round(bounds.x);
@@ -799,6 +802,7 @@ function detachWindow(state, options = {}) {
   );
 
   a.SetParent(state.hwnd, state.saved.parent || null);
+  state.topLevel = true;
 
   const bounds = options.screenBounds || state.screenBounds;
   a.SetWindowPos(
