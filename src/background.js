@@ -32,6 +32,8 @@ let desktopWidgetStopping = false;
 let desktopTextEditing = false;
 let desktopTopLevel = false;
 let desktopShellTimer = null;
+let desktopShellStableActive = null;
+let desktopShellStableSince = 0;
 let desktopMoveSession = null;
 let desktopWidgetErrorShown = false;
 var tray = null;
@@ -412,6 +414,18 @@ function syncDesktopShellMode() {
   if (desktopTextEditing) return;
 
   const desktopActive = isDesktopForeground();
+  const now = Date.now();
+  if (desktopActive !== desktopShellStableActive) {
+    desktopShellStableActive = desktopActive;
+    desktopShellStableSince = now;
+    return;
+  }
+
+  // Win+D briefly changes the foreground several times. Only switch after
+  // the state has been stable for a while, otherwise the reparent itself
+  // shows up as a flicker.
+  if (now - desktopShellStableSince < 700) return;
+
   if (desktopActive && !desktopTopLevel) {
     setDesktopTopLevel(true);
   } else if (!desktopActive && desktopTopLevel) {
@@ -421,7 +435,9 @@ function syncDesktopShellMode() {
 
 function startDesktopShellWatcher() {
   if (desktopShellTimer) clearInterval(desktopShellTimer);
-  desktopShellTimer = setInterval(syncDesktopShellMode, 250);
+  desktopShellStableActive = isDesktopForeground();
+  desktopShellStableSince = Date.now();
+  desktopShellTimer = setInterval(syncDesktopShellMode, 200);
 }
 
 function stopDesktopShellWatcher() {
@@ -548,6 +564,13 @@ function handleDesktopAttachError(error) {
 function focusDesktopWidget(event) {
   const win = BrowserWindow.fromWebContents(event.sender);
   if (win !== desktopWindow || !desktopAttachment) return;
+  if (
+    !desktopTopLevel &&
+    !desktopTextEditing &&
+    isDesktopForeground()
+  ) {
+    setDesktopTopLevel(true);
+  }
   desktopLayer.focusWindow(desktopAttachment);
   const cleared = desktopLayer.clearDesktopSelection();
   if (cleared > 0) {
