@@ -16,6 +16,7 @@
 
 const GWL_STYLE = -16;
 const GWL_EXSTYLE = -20;
+const GWLP_HWNDPARENT = -8;
 
 const WS_CHILD = 0x40000000;
 const WS_POPUP = 0x80000000;
@@ -803,6 +804,14 @@ function detachWindow(state, options = {}) {
 
   a.SetParent(state.hwnd, state.saved.parent || null);
   state.topLevel = true;
+
+  // Own the floating widget by the desktop window so clicking the wallpaper
+  // raises Progman without covering the widget. Owned windows always stay
+  // above their owner, and other applications still stay above the widget.
+  const progman = a.FindWindowW("Progman", null);
+  if (progman) {
+    a.SetWindowLongPtrW(state.hwnd, GWLP_HWNDPARENT, toNumber(progman));
+  }
 
   const bounds = options.screenBounds || state.screenBounds;
   a.SetWindowPos(
