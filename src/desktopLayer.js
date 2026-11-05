@@ -676,6 +676,26 @@ function getWindowScreenRect(target) {
   };
 }
 
+function getForegroundWindowInfo() {
+  const a = loadApi();
+  const hwnd = a.GetForegroundWindow();
+  const info = { hwnd: toNumber(hwnd), className: "", rect: null };
+  if (!hwnd) return info;
+  info.className = getClassName(hwnd);
+  info.rect = getRect(hwnd);
+  return info;
+}
+
+function getParentWindowInfo(target) {
+  if (!target || !target.hwnd) return null;
+  const a = loadApi();
+  const parent = a.GetParent(target.hwnd);
+  return {
+    hwnd: toNumber(parent),
+    className: parent ? getClassName(parent) : "",
+  };
+}
+
 function getCursorPosition() {
   const a = loadApi();
   const buffer = Buffer.alloc(8);
@@ -876,6 +896,8 @@ module.exports = {
   setWindowBounds,
   setWindowScreenBounds,
   getWindowScreenRect,
+  getForegroundWindowInfo,
+  getParentWindowInfo,
   getCursorPosition,
   isLeftButtonDown,
   captureDesktopRegion,

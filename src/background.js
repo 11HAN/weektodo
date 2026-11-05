@@ -365,9 +365,19 @@ function startDesktopTextEdit(event) {
     });
     desktopWindow.setSkipTaskbar(true);
     desktopWindow.setAlwaysOnTop(false);
+    // Electron's focus() does not always beat Windows' foreground lock when
+    // the window was just reparented. Move focus through user32 as well so
+    // Chromium is the active window and reports the caret to the IME.
+    desktopLayer.focusWindow(desktopAttachment);
     desktopWindow.focus();
     desktopWindow.webContents.focus();
-    desktopLog("text edit: detached to top level for IME");
+    const foreground = desktopLayer.getForegroundWindowInfo();
+    const parent = desktopLayer.getParentWindowInfo(desktopAttachment);
+    const rect = desktopLayer.getWindowScreenRect(desktopAttachment);
+    desktopLog(
+      `text edit: detached parent=${parent && parent.className} ` +
+        `foreground=${foreground.className} rect=${JSON.stringify(rect)}`
+    );
   } catch (error) {
     desktopTextEditing = false;
     desktopLog(
