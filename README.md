@@ -111,7 +111,7 @@ WeekToDo 是一个 GPL 许可的开源项目，其持续开发完全依靠用户
 
 从 [Releases](https://github.com/11HAN/weektodo/releases/latest) 下载最新版安装包：
 
-- `WeekToDo Setup 2.2.5.exe`（x64）
+- `WeekToDo Setup 2.2.6.exe`（x64）
 
 双击安装后，应用会直接以桌面组件运行。通过托盘菜单可以打开设置、开关组件或退出。
 
@@ -147,7 +147,7 @@ yarn electron:build
 
 产物：
 
-- 安装包：`dist_electron\WeekToDo Setup 2.2.5.exe`
+- 安装包：`dist_electron\WeekToDo Setup 2.2.6.exe`
 - 免安装目录：`dist_electron\win-unpacked\WeekToDo.exe`
 
 只想生成免安装目录时，使用 `yarn electron:build --dir`。打包前请先退出正在运行的 WeekToDo。
