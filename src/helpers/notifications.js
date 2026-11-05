@@ -13,7 +13,7 @@ export default {
 
     if (todoList != null)
       todoList.forEach((todo) => {
-        if (todo.alarm && !todo.checked && moment(todo.time, "HH:mm") >= moment()) {
+        if (todo.alarm && !todo.checked && !todo.failed && moment(todo.time, "HH:mm") >= moment()) {
           notificationsList.push(this.createNotificationAlert(todo.time, todo.text, notificationSound));
         }
       });

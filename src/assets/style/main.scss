@@ -373,6 +373,11 @@ i {
   color: #3a3a40;
 }
 
+.dark-theme .todo-item .failed-todo a,
+.dark-theme .inline-todo-item .failed-todo a {
+  color: #ff7b72;
+}
+
 #toDoModal a {
   color: unset;
 }

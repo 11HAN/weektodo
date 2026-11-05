@@ -26,7 +26,14 @@ const mutations = {
     state.todoLists[obj] = [];
   },
   checkTodo(state, obj) {
-    state.todoLists[obj.toDoListId][obj.index].checked = !state.todoLists[obj.toDoListId][obj.index].checked;
+    let todo = state.todoLists[obj.toDoListId][obj.index];
+    todo.checked = !todo.checked;
+    if (todo.checked) todo.failed = false;
+  },
+  toggleTodoFailed(state, obj) {
+    let todo = state.todoLists[obj.toDoListId][obj.index];
+    todo.failed = !todo.failed;
+    if (todo.failed) todo.checked = false;
   },
   moveTodoToEnd(state, obj) {
       state.todoLists[obj.toDoListId].push(state.todoLists[obj.toDoListId].splice(obj.index, 1)[0]);
@@ -46,12 +53,12 @@ const mutations = {
   },
   checkAllItems(state, toDoListId) {
     state.todoLists[toDoListId].forEach((toDo) => {
-      toDo.checked = true;
+      if (!toDo.failed) toDo.checked = true;
     });
   },
   moveUndoneItems(state, obj) {
     for (let i = state.todoLists[obj.origenId].length - 1; i >= 0; i--) {
-      if (!state.todoLists[obj.origenId][i].checked) {
+      if (!state.todoLists[obj.origenId][i].checked && !state.todoLists[obj.origenId][i].failed) {
         state.todoLists[obj.origenId][i].repeatingEvent = null;
         state.todoLists[obj.origenId][i].listId = obj.destinyId;
         state.todoLists[obj.destinyId].unshift(state.todoLists[obj.origenId][i]);

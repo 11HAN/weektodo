@@ -3,6 +3,7 @@ const state = {
     toDo: {
       text: "Text",
       checked: false,
+      failed: false,
       listId: 1,
       desc: "",
       subTaskList: [],

@@ -3,23 +3,30 @@
     @dragstart="startDrag($event, activeTodo.toDo, activeTodo.index)" @dragend="endDrag()" @wheel="movingWheel"
     :class="{ 'dragging': todoDragging }" @mouseleave="hideToDoItem">
     <div class="d-flex">
-      <span class="noselect item-text" :class="{ 'checked-todo': activeTodo.toDo.checked }" style="flex-grow: 1"
-        @click="checkTodoClickhandler" @click.middle="showToDoDetails">
-        <span v-if="activeTodo.toDo.color != 'none'" class="cicle-icon" :style="'color: ' + activeTodo.toDo.color" :class="{
-          'bi-check-circle-fill': activeTodo.toDo.checked,
-          'bi-circle-fill': !activeTodo.toDo.checked,
-        }"></span>
+      <span class="noselect item-text"
+        :class="{ 'checked-todo': activeTodo.toDo.checked, 'failed-todo': activeTodo.toDo.failed }"
+        style="flex-grow: 1" @click="checkTodoClickhandler" @click.middle="showToDoDetails">
+        <span v-if="activeTodo.toDo.failed" class="cicle-icon failed-icon bi-x-circle-fill"></span>
+        <span v-else-if="activeTodo.toDo.color != 'none'" class="cicle-icon"
+          :style="'color: ' + activeTodo.toDo.color" :class="{
+            'bi-check-circle-fill': activeTodo.toDo.checked,
+            'bi-circle-fill': !activeTodo.toDo.checked,
+          }"></span>
         <span v-else class="cicle-icon"
           :class="{ 'bi-check-circle': activeTodo.toDo.checked, 'bi-circle': !activeTodo.toDo.checked, }"></span>
         <span class="item-text-content">
           <span v-html="todoText"></span>
-          <span class="time-details"> {{ timeFormat(activeTodo.toDo.time) }}
+          <span class="time-details" :class="{ 'failed-todo': activeTodo.toDo.failed }"> {{ timeFormat(activeTodo.toDo.time) }}
             <div class="alarm-indicator"
               :class="{ 'show-alarm-indicator': notificationIndicator && activeTodo.toDo.alarm }"></div>
           </span>
         </span>
       </span>
       <i class="bi-three-dots todo-item-menu" type="button" @click="showToDoDetails"></i>
+      <i class="todo-item-fail" type="button"
+        :class="{ 'bi-x-octagon': !activeTodo.toDo.failed, 'bi-x-octagon-fill': activeTodo.toDo.failed, 'is-failed': activeTodo.toDo.failed }"
+        :title="activeTodo.toDo.failed ? $t('todoDetails.markPending') : $t('todoDetails.markFailed')"
+        @click.stop="toggleFailedTodo"></i>
       <i class="bi-x todo-item-remove" @click="removeTodo"></i>
     </div>
 
@@ -89,6 +96,26 @@ export default {
       var id = this.activeTodo.toDoListId;
       var index = this.activeTodo.index;
       this.clickhandler.handle(() => { this.checkToDo(id, index) }, this.activeTodo.edit, `${this.activeTodo.toDoListId}${this.activeTodo.index}`);
+    },
+    toggleFailedTodo: function () {
+      let toDoListId = this.activeTodo.toDoListId;
+      let index = this.activeTodo.index;
+      this.$store.commit("toggleTodoFailed", { toDoListId: toDoListId, index: index });
+      if (
+        this.$store.getters.config.autoReorderTasks ||
+        (this.activeTodo.toDo.failed && this.$store.getters.config.moveCompletedTaskToBottom)
+      ) {
+        this.$refs.currentTodo.style.display = `none`;
+      }
+      if (this.activeTodo.toDo.failed && this.$store.getters.config.moveCompletedTaskToBottom) {
+        this.$store.commit("moveTodoToEnd", { toDoListId: toDoListId, index: index });
+      }
+      if (this.$store.getters.config.autoReorderTasks) {
+        toDoListRepository.update(toDoListId, tasksHelper.reorderTasksList(this.$store.getters.todoLists[toDoListId]));
+      } else {
+        toDoListRepository.update(toDoListId, this.$store.getters.todoLists[toDoListId]);
+      }
+      notifications.refreshDayNotifications(this, toDoListId);
     },
     checkToDo: function (toDoListId, index) {
       if (this.$store.getters.todoLists[toDoListId][index].checked && this.$store.getters.config.moveCompletedTaskToBottom) {
@@ -280,6 +307,26 @@ export default {
   }
 }
 
+.failed-todo {
+  color: #c0392b;
+  text-decoration: line-through;
+  text-decoration-color: rgba(192, 57, 43, 0.55);
+
+  .dark-theme & {
+    color: #ff7b72;
+    text-decoration-color: rgba(255, 123, 114, 0.55);
+  }
+}
+
+.failed-icon {
+  color: #c0392b;
+  opacity: 0.85;
+
+  .dark-theme & {
+    color: #ff7b72;
+  }
+}
+
 .checked-sub-task {
   color: #c4c4c4;
   text-decoration: line-through;
@@ -304,7 +351,8 @@ export default {
   flex-grow: 0;
 }
 
-.todo-item-menu {
+.todo-item-menu,
+.todo-item-fail {
   font-size: 1rem;
   cursor: pointer;
   margin-top: 3px;
@@ -315,19 +363,34 @@ export default {
   flex-grow: 0;
 }
 
+.todo-item-fail {
+  margin-right: 2px;
+}
+
 .todo-item-remove:hover,
 .todo-item-menu:hover {
   color: black;
 }
 
+.todo-item-fail:hover,
+.todo-item-fail.is-failed {
+  color: #c0392b;
+}
+
 .dark-theme .todo-item-remove,
-.dark-theme .todo-item-menu {
+.dark-theme .todo-item-menu,
+.dark-theme .todo-item-fail {
   color: #c9d1d9;
 }
 
 .dark-theme .todo-item-remove:hover,
 .dark-theme .todo-item-menu:hover {
   color: white;
+}
+
+.dark-theme .todo-item-fail:hover,
+.dark-theme .todo-item-fail.is-failed {
+  color: #ff7b72;
 }
 
 .drag-hover {

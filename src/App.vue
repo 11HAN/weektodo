@@ -599,7 +599,7 @@ export default {
         target &&
         target.closest &&
         target.closest(
-          "button, a, input, textarea, select, .modal, .dropdown-menu, .desktop-drag-grip, .desktop-widget-actions, .header-menu-icons, .todo-item-menu, .todo-item-remove, .cicle-icon"
+          "button, a, input, textarea, select, .modal, .dropdown-menu, .desktop-drag-grip, .desktop-widget-actions, .header-menu-icons, .todo-item-menu, .todo-item-remove, .todo-item-fail, .cicle-icon"
         )
       ) {
         return "";
@@ -2272,6 +2272,10 @@ body.desktop-settings-body .modal-backdrop {
 .desktop-mode .checked-todo,
 .desktop-mode .checked-sub-task {
   color: var(--dw-muted) !important;
+}
+
+.desktop-mode .failed-todo {
+  color: #e5534b !important;
 }
 
 .desktop-mode .todo-input,

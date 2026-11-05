@@ -239,7 +239,9 @@
     "close": "关闭",
     "actions": "操作",
     "daysOfMonth": "每月的天数",
-    "customWeekdays": "自定义工作日"
+    "customWeekdays": "自定义工作日",
+    "markFailed": "标记为失败",
+    "markPending": "标记为未完成"
   },
   "notifications": {
     "noPendingTasksToday": "你今天没有定期任务。",

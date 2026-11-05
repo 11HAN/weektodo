@@ -70,6 +70,12 @@
                 </button>
               </li>
               <li>
+                <button class="dropdown-item" type="button" @click="toggleFailedTodo">
+                  <i :class="todo.failed ? 'bi-arrow-counterclockwise' : 'bi-x-octagon'"></i>
+                  <span>{{ todo.failed ? $t("todoDetails.markPending") : $t("todoDetails.markFailed") }}</span>
+                </button>
+              </li>
+              <li>
                 <hr class="dropdown-divider" />
               </li>
               <li>
@@ -95,7 +101,7 @@
               @change="checkTodoClickhandler(false)" />
             <div class="title-container">
               <label v-show="!editingTitle" class="form-check-label todo-title" for="todo-header"
-                :class="{ 'completed-task': todo.checked }" @dblclick="editTitle">
+                :class="{ 'completed-task': todo.checked, 'failed-task': todo.failed }" @dblclick="editTitle">
                 <span v-html="todoText"></span>
               </label>
               <label v-show="!editingTitle && todo.text == ''" class="form-check-label todo-title todo-title-empty-title"
@@ -181,6 +187,7 @@ export default {
       todo: {
         text: "",
         checked: false,
+        failed: false,
         desc: "",
         subTaskList: [],
         alarm: false,
@@ -286,12 +293,24 @@ export default {
     },
     checkTodo: function (resetRepeatinEvent = true) {
       if (this.todo.checked) {
+        this.todo.failed = false;
         if (this.$store.getters.config.moveCompletedTaskToBottom) {
           this.$store.commit("moveTodoToEnd", { toDoListId: this.todo.listId, index: this.index });
         }
         this.index = this.todoList.length - 1;
       }
       this.updateTodoWithReorder(resetRepeatinEvent);
+    },
+    toggleFailedTodo: function () {
+      this.todo.failed = !this.todo.failed;
+      if (this.todo.failed) {
+        this.todo.checked = false;
+        if (this.$store.getters.config.moveCompletedTaskToBottom) {
+          this.$store.commit("moveTodoToEnd", { toDoListId: this.todo.listId, index: this.index });
+          this.index = this.todoList.length - 1;
+        }
+      }
+      this.updateTodoWithReorder();
     },
     updateTodo: function (resetRepeatinEvent = true) {
       if (resetRepeatinEvent) {
@@ -404,6 +423,7 @@ export default {
       var newTodo = {
         text: this.todo.text,
         checked: this.todo.checked,
+        failed: this.todo.failed,
         listId: this.todo.listId,
         desc: this.todo.desc,
         subTaskList: this.todo.subTaskList,
@@ -495,6 +515,9 @@ export default {
       this.todoList = this.$store.getters.todoLists[newVal.toDo.listId];
       this.index = newVal.index;
       this.todo = this.todoList[this.index];
+      if (this.todo["failed"] == undefined) {
+        this.todo["failed"] = false;
+      }
       if (this.todo["desc"] == undefined) {
         this.todo["desc"] = "";
         this.todo["subTaskList"] = [];
@@ -842,5 +865,16 @@ export default {
 
 .completed-task {
   text-decoration: line-through;
+}
+
+.failed-task {
+  color: #c0392b;
+  text-decoration: line-through;
+  text-decoration-color: rgba(192, 57, 43, 0.55);
+
+  .dark-theme & {
+    color: #ff7b72;
+    text-decoration-color: rgba(255, 123, 114, 0.55);
+  }
 }
 </style>

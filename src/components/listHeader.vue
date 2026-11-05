@@ -25,7 +25,7 @@
           <i class="bi-plus-lg"></i> <span>{{ $t('ui.newTask') }}</span>
         </button>
       </li>
-      <li v-show="!allTodoChecked()">
+      <li v-show="hasPendingTasks()">
         <button class="dropdown-item" type="button" @click="check_all_items">
           <i class="bi-check2-all"></i> <span>{{ $t('ui.completeAll') }}</span>
         </button>
@@ -35,7 +35,7 @@
           <i class="bi-sort-down"></i> <span>{{ $t('ui.reorder') }}</span>
         </button>
       </li>
-      <li v-show="!customTodoList && !allTodoChecked()">
+      <li v-show="!customTodoList && hasPendingTasks()">
         <button class="dropdown-item" type="button" @click="moveUndoneItems">
           <i class="bi-reply-all"></i> <span>{{ $t('ui.postpone') }}</span>
         </button>
@@ -125,15 +125,10 @@ export default {
       notifications.refreshDayNotifications(this, todoListId);
       toDoListRepository.update(todoListId, TodoList);
     },
-    allTodoChecked: function () {
-      let allChecked = true;
-      this.toDoList.forEach(function (todo) {
-        if (!todo.checked) {
-          allChecked = false;
-          return;
-        }
+    hasPendingTasks: function () {
+      return this.toDoList.some(function (todo) {
+        return !todo.checked && !todo.failed;
       });
-      return allChecked;
     },
     editToDoListName: function () {
       this.name = this.$store.getters.cTodoListIds[this.cTodoListIndex].listName;

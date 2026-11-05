@@ -212,7 +212,9 @@
     "close": "Cerca",
     "actions": "Acciones",
     "daysOfMonth": "Días del mes",
-    "customWeekdays": "Días de la semana personalizados"
+    "customWeekdays": "Días de la semana personalizados",
+    "markFailed": "Marcar como fallida",
+    "markPending": "Marcar como pendiente"
   },
   "notifications": {
     "noPendingTasksToday": "No tienes tareas programadas hoy.",

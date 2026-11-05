@@ -60,7 +60,7 @@ export default {
   },
   data() {
     return {
-      newToDo: { text: "", checked: false },
+      newToDo: { text: "", checked: false, failed: false },
       newTodoActive: false,
       fakeItemCounts: 6,
       fakeItemsDragHover: false,
@@ -100,6 +100,7 @@ export default {
         var newTodo = {
           text: this.newToDo.text,
           checked: false,
+          failed: false,
           listId: this.id,
           desc: "",
           subTaskList: [],

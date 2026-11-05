@@ -6,9 +6,10 @@
       <div v-if="!editing" class="inline-todo-item d-flex flex-column" @mouseenter="showToDoItem">
         <div class="d-flex">
           <span class="noselect item-text"
-            :class="{ 'checked-todo': toDo.checked, 'compact-view': compactView, 'wrap-text': wrapTaskText }"
+            :class="{ 'checked-todo': toDo.checked, 'failed-todo': toDo.failed, 'compact-view': compactView, 'wrap-text': wrapTaskText }"
             style="flex-grow: 1">
-            <span v-if="toDo.color != 'none'" class="cicle-icon" :style="'color: ' + toDo.color" :class="{
+            <span v-if="toDo.failed" class="cicle-icon failed-icon bi-x-circle-fill"></span>
+            <span v-else-if="toDo.color != 'none'" class="cicle-icon" :style="'color: ' + toDo.color" :class="{
               'bi-check-circle-fill': toDo.checked,
               'bi-circle-fill': !toDo.checked,
             }"></span>
@@ -16,13 +17,13 @@
               :class="{ 'bi-check-circle': toDo.checked, 'bi-circle': !toDo.checked, }"></span>
             <span class="item-text-content">
               <span v-html="todoText"></span>
-              <span v-if="!compactView" class="item-time mx-2" :class="{ 'checked-todo': toDo.checked }"> {{
+              <span v-if="!compactView" class="item-time mx-2" :class="{ 'checked-todo': toDo.checked, 'failed-todo': toDo.failed }"> {{
                   timeFormat(toDo.time)
               }} <div class="alarm-indicator" :class="{ 'show-alarm-indicator': notificationIndicator && toDo.alarm }">
                 </div></span>
             </span>
           </span>
-          <span v-if="compactView" class="item-time" :class="{ 'checked-todo': toDo.checked }"> {{ timeFormat(toDo.time)
+          <span v-if="compactView" class="item-time" :class="{ 'checked-todo': toDo.checked, 'failed-todo': toDo.failed }"> {{ timeFormat(toDo.time)
           }}
             <div class="alarm-indicator" :class="{ 'show-alarm-indicator': notificationIndicator && toDo.alarm }"></div>
           </span>
@@ -222,7 +223,8 @@ export default {
   opacity: 0.6;
 }
 
-.item-time.checked-todo {
+.item-time.checked-todo,
+.item-time.failed-todo {
   opacity: unset;
 }
 
@@ -238,6 +240,26 @@ export default {
 
   .dark-theme & {
     color: #636363;
+  }
+}
+
+.failed-todo {
+  color: #c0392b;
+  text-decoration: line-through;
+  text-decoration-color: rgba(192, 57, 43, 0.55);
+
+  .dark-theme & {
+    color: #ff7b72;
+    text-decoration-color: rgba(255, 123, 114, 0.55);
+  }
+}
+
+.failed-icon {
+  color: #c0392b;
+  opacity: 0.85;
+
+  .dark-theme & {
+    color: #ff7b72;
   }
 }
 

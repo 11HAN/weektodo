@@ -239,7 +239,9 @@
     "close": "Close",
     "actions": "Actions",
     "customWeekdays": "Custom Weekdays",
-    "daysOfMonth": "Days of Month"
+    "daysOfMonth": "Days of Month",
+    "markFailed": "Mark as failed",
+    "markPending": "Mark as pending"
   },
   "notifications": {
     "noPendingTasksToday": "You have no scheduled tasks today.",
