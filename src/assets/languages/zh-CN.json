@@ -56,7 +56,15 @@
     "systemDefaultFont": "系统默认",
     "fontColor": "字体颜色",
     "fontWeight": "字重",
-    "useThemeColor": "跟随主题"
+    "useThemeColor": "跟随主题",
+    "about": "关于",
+    "aboutVersion": "版本",
+    "aboutAuthor": "作者",
+    "aboutRepository": "GitHub 仓库",
+    "aboutUpstream": "上游项目",
+    "aboutLicense": "许可证",
+    "aboutBuiltWith": "运行环境",
+    "aboutDescription": "WeekToDo 是一款极简周计划应用，本分支以 Windows 桌面组件的形式运行。"
   },
   "donate": {
     "contribute": "贡献",

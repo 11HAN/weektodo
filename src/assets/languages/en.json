@@ -56,7 +56,15 @@
     "systemDefaultFont": "System default",
     "fontColor": "Font color",
     "fontWeight": "Font weight",
-    "useThemeColor": "Use theme color"
+    "useThemeColor": "Use theme color",
+    "about": "About",
+    "aboutVersion": "Version",
+    "aboutAuthor": "Author",
+    "aboutRepository": "GitHub repository",
+    "aboutUpstream": "Upstream project",
+    "aboutLicense": "License",
+    "aboutBuiltWith": "Runtime",
+    "aboutDescription": "WeekToDo is a minimalist weekly planner. This fork runs as a Windows desktop widget."
   },
   "donate": {
     "contribute": "Contribute",

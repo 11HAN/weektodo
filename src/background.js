@@ -682,6 +682,13 @@ function registerDesktopIpc() {
   ipcMain.on("desktop-widget-text-edit-start", startDesktopTextEdit);
   ipcMain.on("desktop-widget-text-edit-end", stopDesktopTextEdit);
   ipcMain.on("desktop-backdrop-request", sendDesktopBackdrop);
+  ipcMain.handle("get-app-info", () => ({
+    version: app.getVersion(),
+    electron: process.versions.electron,
+    chrome: process.versions.chrome,
+    platform: process.platform,
+    arch: process.arch,
+  }));
   ipcMain.on("desktop-widget-drag-start", () => startDesktopMove("move"));
   ipcMain.on("desktop-widget-resize-start", (_event, direction) =>
     startDesktopMove("resize", direction)

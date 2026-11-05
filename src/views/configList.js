@@ -53,6 +53,12 @@ export default {
               linktype: "tagId",
               link: "config-language-tab",
             },
+            {
+              name: vue.$t('settings.about'),
+              ico: "bi-info-circle",
+              linktype: "tagId",
+              link: "config-about-tab",
+            },
           ]
     }
 }

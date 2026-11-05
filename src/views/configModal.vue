@@ -62,6 +62,12 @@
                 Behavior
               </button>
             </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="config-about-tab" data-bs-toggle="tab" data-bs-target="#config-about"
+                role="tab">
+                {{ $t("settings.about") }}
+              </button>
+            </li>
           </ul>
 
           <div id="config-links-menu" class="tab-pane fade show" style="width: 280px;">
@@ -479,6 +485,35 @@
                 </select>
               </div>
             </div>
+            <div class="tab-pane fade" id="config-about">
+              <div class="d-flex flex-column mt-2 h-100 about-panel">
+                <div class="about-title">WeekToDo</div>
+                <p class="about-description">{{ $t("settings.aboutDescription") }}</p>
+                <dl class="about-list">
+                  <dt>{{ $t("settings.aboutVersion") }}</dt>
+                  <dd>{{ appInfo.version || "—" }}</dd>
+                  <dt>{{ $t("settings.aboutAuthor") }}</dt>
+                  <dd>
+                    <a href="https://github.com/11HAN" target="_blank" rel="noopener"
+                      @click.prevent="openExternal('https://github.com/11HAN')">11HAN</a>
+                  </dd>
+                  <dt>{{ $t("settings.aboutRepository") }}</dt>
+                  <dd>
+                    <a href="https://github.com/11HAN/weektodo" target="_blank" rel="noopener"
+                      @click.prevent="openExternal('https://github.com/11HAN/weektodo')">11HAN/weektodo</a>
+                  </dd>
+                  <dt>{{ $t("settings.aboutUpstream") }}</dt>
+                  <dd>
+                    <a href="https://github.com/manuelernestog/weektodo" target="_blank" rel="noopener"
+                      @click.prevent="openExternal('https://github.com/manuelernestog/weektodo')">manuelernestog/weektodo</a>
+                  </dd>
+                  <dt>{{ $t("settings.aboutLicense") }}</dt>
+                  <dd>GPL-3.0</dd>
+                  <dt>{{ $t("settings.aboutBuiltWith") }}</dt>
+                  <dd>Electron {{ appInfo.electron || "—" }} · Chromium {{ appInfo.chrome || "—" }}</dd>
+                </dl>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -512,6 +547,7 @@ export default {
       desktopThemes: DESKTOP_THEMES,
       activeLink: "config-desktop-widget-tab",
       systemFonts: [],
+      appInfo: { version: "", electron: "", chrome: "" },
     };
   },
   mounted() {
@@ -541,6 +577,12 @@ export default {
           .catch(() => {
             this.systemFonts = [];
           });
+        ipcRenderer
+          .invoke("get-app-info")
+          .then((info) => {
+            if (info) this.appInfo = info;
+          })
+          .catch(() => {});
       } catch (error) {
         this.systemFonts = [];
       }
@@ -598,6 +640,13 @@ export default {
     isElectron: function () {
       let isElectron = require("is-electron");
       return isElectron();
+    },
+    openExternal: function (url) {
+      if (this.isElectron()) {
+        require("electron").shell.openExternal(url);
+      } else {
+        window.open(url, "_blank");
+      }
     },
     goHome: function () {
       document.getElementById("config-home-tab").click();
@@ -890,5 +939,47 @@ export default {
   .zoom-config {
     display: none;
   }
+}
+.about-panel {
+  max-width: 620px;
+  padding: 4px 2px;
+}
+
+.about-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--dw-text, inherit);
+}
+
+.about-description {
+  margin: 4px 0 20px;
+  color: var(--dw-muted, #6b7280);
+}
+
+.about-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 10px 18px;
+  margin: 0;
+}
+
+.about-list dt {
+  font-weight: 500;
+  color: var(--dw-text, #374151);
+}
+
+.about-list dd {
+  margin: 0;
+  color: var(--dw-text, #111827);
+  overflow-wrap: anywhere;
+}
+
+.about-list a {
+  color: var(--dw-accent, #2563eb);
+  text-decoration: none;
+}
+
+.about-list a:hover {
+  text-decoration: underline;
 }
 </style>
