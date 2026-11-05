@@ -108,9 +108,12 @@ if (IS_DESKTOP_MODE && !IS_DESKTOP_SETTINGS_WINDOW && typeof require !== "undefi
     ].join(", ");
 
     const TEXT_LAUNCHER_SELECTOR = ".fake-drop-zone, .new-todo-row, .fake-lines";
+    const TEXT_EDIT_DBLCLICK_SELECTOR =
+      ".inline-todo-item, #todo-item-active, .item-text, .todo-title, .description-empty, .todo-description, .sub-task";
 
     let textEditing = false;
     let textEditEndTimer = null;
+    let textEditFocusTimer = null;
     let textEditStartedAt = 0;
     let textEditTransitioning = false;
     let textEditTransitionTimer = null;
@@ -121,6 +124,13 @@ if (IS_DESKTOP_MODE && !IS_DESKTOP_SETTINGS_WINDOW && typeof require !== "undefi
     const isTextLauncher = (target) =>
       !!(target && target.closest && target.closest(TEXT_LAUNCHER_SELECTOR));
 
+    const isTextEditTarget = (target) =>
+      !!(
+        target &&
+        target.closest &&
+        target.closest(TEXT_EDIT_DBLCLICK_SELECTOR)
+      );
+
     const beginTextEdit = () => {
       if (textEditing) return;
       textEditing = true;
@@ -130,6 +140,13 @@ if (IS_DESKTOP_MODE && !IS_DESKTOP_SETTINGS_WINDOW && typeof require !== "undefi
       textEditTransitionTimer = setTimeout(() => {
         textEditTransitioning = false;
       }, 450);
+      clearTimeout(textEditFocusTimer);
+      textEditFocusTimer = setTimeout(() => {
+        // A double-click on a task may not actually open an editor (for
+        // example when it is treated as a single click). Do not leave the
+        // widget floating above the desktop in that case.
+        if (!isTextInput(document.activeElement)) endTextEdit();
+      }, 700);
       ipcRenderer.send("desktop-widget-text-edit-start");
     };
 
@@ -137,6 +154,7 @@ if (IS_DESKTOP_MODE && !IS_DESKTOP_SETTINGS_WINDOW && typeof require !== "undefi
       if (!textEditing) return;
       textEditing = false;
       textEditTransitioning = false;
+      clearTimeout(textEditFocusTimer);
       ipcRenderer.send("desktop-widget-text-edit-end");
     };
 
@@ -181,7 +199,9 @@ if (IS_DESKTOP_MODE && !IS_DESKTOP_SETTINGS_WINDOW && typeof require !== "undefi
       (event) => {
         if (
           event.button === 0 &&
-          (isTextInput(event.target) || isTextLauncher(event.target))
+          (isTextInput(event.target) ||
+            isTextLauncher(event.target) ||
+            (event.detail >= 2 && isTextEditTarget(event.target)))
         ) {
           beginTextEdit();
         }
@@ -193,7 +213,10 @@ if (IS_DESKTOP_MODE && !IS_DESKTOP_SETTINGS_WINDOW && typeof require !== "undefi
     window.addEventListener(
       "focusin",
       (event) => {
-        if (isTextInput(event.target)) beginTextEdit();
+        if (isTextInput(event.target)) {
+          clearTimeout(textEditFocusTimer);
+          beginTextEdit();
+        }
       },
       true
     );
