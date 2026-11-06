@@ -1267,6 +1267,14 @@ export default {
         : glassWhite
           ? "rgba(255, 255, 255, 1)"
           : "rgba(255, 255, 255, 0.9)";
+      const cardBase = glassDark
+        ? "rgba(22, 32, 46, 0.26)"
+        : glassWhite
+          ? "rgba(255, 255, 255, 0.5)"
+          : "rgba(255, 255, 255, 0.32)";
+      const cardShadow = glassDark
+        ? "rgba(0, 0, 0, 0.24)"
+        : "rgba(15, 23, 42, 0.1)";
       const customColor = /^#[0-9a-f]{6}$/i.test(this.fontColor)
         ? this.fontColor
         : "";
@@ -1331,15 +1339,18 @@ export default {
           : glassWhite
             ? "saturate(0.55) brightness(1.06)"
             : "saturate(1) brightness(1.03)",
+        "--lg-card-base": cardBase,
+        "--lg-card-shadow": cardShadow,
       };
     },
     desktopWindowBaseStyle: function () {
       const theme = this.desktopThemeDefinition;
+      // Keep the sliver outside the rounded card on the theme colour. Painting
+      // the sampled wallpaper there made dark wallpapers look like black
+      // rectangular corners around the widget.
       return {
         backgroundColor: theme.shell,
-        backgroundImage: this.desktopBackdrop
-          ? `url(${this.desktopBackdrop})`
-          : "none",
+        backgroundImage: "none",
       };
     },
     resizableStyle: function () {
@@ -1391,9 +1402,9 @@ body {
   line-height: unset !important;
 }
 
-/* Paints the sampled wallpaper in the four corner slivers outside the card.
-   Windows window regions are binary, so filling those corners with the real
-   wallpaper keeps the native rounded clip from showing a jagged white edge. */
+/* Fills the four corner slivers outside the rounded card with the theme
+   colour. The wallpaper fill made dark wallpapers read as black rectangular
+   corners around the widget. */
 .desktop-window-base {
   position: fixed;
   inset: 0;
@@ -1883,12 +1894,13 @@ body {
     linear-gradient(112deg, transparent 0%, var(--lg-streak) 18%, transparent 34%),
     radial-gradient(110% 150% at 12% 0%, var(--lg-sheen), transparent 58%),
     linear-gradient(160deg, var(--lg-glass), var(--lg-glass-strong));
+  background-color: var(--lg-card-base);
   border-color: var(--lg-border);
   box-shadow:
     inset 0 1px 0 var(--lg-highlight),
     inset 0 0 22px rgba(255, 255, 255, 0.16),
     inset 0 -8px 18px var(--lg-inner-shadow),
-    0 12px 28px var(--lg-shadow);
+    0 10px 24px var(--lg-card-shadow);
   -webkit-backdrop-filter: blur(6px) var(--lg-panel-effects);
   backdrop-filter: blur(6px) var(--lg-panel-effects);
 }
