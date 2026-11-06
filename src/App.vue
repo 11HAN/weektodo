@@ -436,10 +436,12 @@ export default {
         document.addEventListener("hidden.bs.modal", this.handleDesktopModalHidden);
         ipcRenderer.send("desktop-backdrop-request");
       }
-      if (!this.desktopMode) {
-        if (this.$store.getters.config.firstTimeOpen) this.ipcRenderer.send("show-current-window");
-        this.ipcRenderer.send("match-open-on-startup", this.$store.getters.config.openOnStartup);
+      if (!this.desktopMode && this.$store.getters.config.firstTimeOpen) {
+        this.ipcRenderer.send("show-current-window");
       }
+      // The desktop widget and its settings window never create the legacy main
+      // window, so they must reconcile the login item themselves.
+      this.ipcRenderer.send("match-open-on-startup", this.$store.getters.config.openOnStartup);
     }
 
     if (!this.desktopMode && this.$store.getters.config.importing) {

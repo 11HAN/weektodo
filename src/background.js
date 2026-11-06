@@ -68,12 +68,6 @@ async function createWindow() {
 
   ipcMain.on("show-current-window", showCurrentWindow);
   ipcMain.on("is-windows-visible", isWindowsVisible);
-  ipcMain.on("match-open-on-startup", matchOpenOnStartup);
-  ipcMain.on("set-open-on-startup", setOpenOnStartup);
-  ipcMain.on("set-run-in-background", setRunInBackground);
-  ipcMain.on("set-tray-context-menu-label", setTrayContextMenuLabel);
-  ipcMain.on("set-dark-tray-icon", setDarkTrayIcon);
-  ipcMain.on("clear-config", clearConfig);
   ipcMain.on("desktop-widget-focus", focusDesktopWidget);
   ipcMain.on("desktop-backdrop-request", sendDesktopBackdrop);
 
@@ -831,6 +825,17 @@ function updateTrayMenu() {
   tray.setContextMenu(trayContextMenu);
 }
 
+// Registered for every platform/window mode. The desktop build does not create
+// the legacy main window, so these handlers cannot live in createWindow().
+function registerCommonIpc() {
+  ipcMain.on("match-open-on-startup", matchOpenOnStartup);
+  ipcMain.on("set-open-on-startup", setOpenOnStartup);
+  ipcMain.on("set-run-in-background", setRunInBackground);
+  ipcMain.on("set-tray-context-menu-label", setTrayContextMenuLabel);
+  ipcMain.on("set-dark-tray-icon", setDarkTrayIcon);
+  ipcMain.on("clear-config", clearConfig);
+}
+
 function registerDesktopIpc() {
   ipcMain.on("is-windows-visible", isWindowsVisible);
   ipcMain.on("desktop-widget-focus", focusDesktopWidget);
@@ -969,6 +974,7 @@ if (!gotTheLock) {
   app.on("ready", async () => {
     createTray();
     ipcMain.handle("get-system-fonts", getSystemFonts);
+    registerCommonIpc();
 
     if (process.platform === "win32") {
       if (!process.env.WEBPACK_DEV_SERVER_URL) {
@@ -1052,10 +1058,15 @@ function setOpenOnStartup(event, openOnStartup) {
     path: app.getPath("exe"),
   });
   if (openOnStartup) {
-    autoLauncher.enable();
+    autoLauncher.enable().catch(logAutoLaunchError);
   } else {
-    autoLauncher.disable();
+    autoLauncher.disable().catch(logAutoLaunchError);
   }
+}
+
+function logAutoLaunchError(error) {
+  desktopLog(`auto-launch failed: ${error && error.stack ? error.stack : error}`);
+  console.error("[auto-launch] failed:", error);
 }
 
 function clearConfig() {
@@ -1093,20 +1104,17 @@ function matchOpenOnStartup(event, openOnStartup) {
     path: app.getPath("exe"),
   });
 
-  autoLauncher
-    .isEnabled()
-    .then((isEnabled) => {
-      if (openOnStartup != isEnabled) {
-        if (openOnStartup) {
-          autoLauncher.enable();
-        } else {
-          autoLauncher.disable();
-        }
-      }
-    })
-    .catch(function (err) {
-      throw err;
-    });
+  // Always rewrite the entry when it should be enabled. isEnabled() only checks
+  // that a value with this name exists, so a stale path from a previous build
+  // would otherwise survive an update.
+  if (openOnStartup) {
+    autoLauncher.enable().catch(logAutoLaunchError);
+  } else {
+    autoLauncher
+      .isEnabled()
+      .then((isEnabled) => (isEnabled ? autoLauncher.disable() : null))
+      .catch(logAutoLaunchError);
+  }
 }
 
 function showWindow(window) {
