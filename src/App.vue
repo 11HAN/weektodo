@@ -1267,6 +1267,11 @@ export default {
         : glassWhite
           ? "rgba(255, 255, 255, 1)"
           : "rgba(255, 255, 255, 0.9)";
+      const cardGap = glassDark
+        ? "rgba(10, 18, 28, 0.3)"
+        : glassWhite
+          ? "rgba(255, 255, 255, 0.34)"
+          : "rgba(255, 255, 255, 0.24)";
       const customColor = /^#[0-9a-f]{6}$/i.test(this.fontColor)
         ? this.fontColor
         : "";
@@ -1331,6 +1336,7 @@ export default {
           : glassWhite
             ? "saturate(0.55) brightness(1.06)"
             : "saturate(1) brightness(1.03)",
+        "--lg-card-gap": cardGap,
       };
     },
     desktopWindowBaseStyle: function () {
@@ -1880,11 +1886,6 @@ body {
    .desktop-mode class is needed because the shared desktop card rule below
    would otherwise override these gradients and shadows. */
 .desktop-mode.desktop-glass .to-do-list-container {
-  margin-left: 0;
-  margin-right: 0;
-  border-radius: 0;
-  border-left-width: 0;
-  border-right-width: 0;
   background:
     linear-gradient(112deg, transparent 0%, var(--lg-streak) 18%, transparent 34%),
     radial-gradient(110% 150% at 12% 0%, var(--lg-sheen), transparent 58%),
@@ -1898,21 +1899,24 @@ body {
   backdrop-filter: blur(6px) var(--lg-panel-effects);
 }
 
-.desktop-mode.desktop-glass .to-do-list-container:first-child {
-  border-top-left-radius: 14px;
-  border-bottom-left-radius: 14px;
-  border-left-width: 1px;
-}
-
-.desktop-mode.desktop-glass .to-do-list-container:last-child {
-  border-top-right-radius: 14px;
-  border-bottom-right-radius: 14px;
-  border-right-width: 1px;
-}
-
 .desktop-mode.desktop-glass.desktop-glass-ready .to-do-list-container {
   -webkit-backdrop-filter: url(#lg-columns) blur(6px) var(--lg-panel-effects);
   backdrop-filter: url(#lg-columns) blur(6px) var(--lg-panel-effects);
+}
+
+/* Paint only the 8px gaps between the seven columns. There is no visible
+   tray behind the cards, but the seams no longer reveal dark wallpaper. */
+.desktop-mode.desktop-glass .todo-slider {
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--lg-card-gap) 0px,
+    var(--lg-card-gap) 4px,
+    transparent 4px,
+    transparent calc(100% / 7 - 4px),
+    var(--lg-card-gap) calc(100% / 7 - 4px),
+    var(--lg-card-gap) calc(100% / 7)
+  );
 }
 
 .desktop-glass .weekly-to-do-header {
