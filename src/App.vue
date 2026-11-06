@@ -1267,14 +1267,13 @@ export default {
         : glassWhite
           ? "rgba(255, 255, 255, 1)"
           : "rgba(255, 255, 255, 0.9)";
-      const cardBase = glassDark
-        ? "rgba(22, 32, 46, 0.26)"
+      // Shared tray behind the columns. It keeps the gaps between the glass
+      // cards light instead of revealing the wallpaper as dark seams.
+      const cardTray = glassDark
+        ? "rgba(10, 18, 28, 0.3)"
         : glassWhite
-          ? "rgba(255, 255, 255, 0.5)"
-          : "rgba(255, 255, 255, 0.32)";
-      const cardShadow = glassDark
-        ? "rgba(0, 0, 0, 0.24)"
-        : "rgba(15, 23, 42, 0.1)";
+          ? "rgba(255, 255, 255, 0.34)"
+          : "rgba(255, 255, 255, 0.22)";
       const customColor = /^#[0-9a-f]{6}$/i.test(this.fontColor)
         ? this.fontColor
         : "";
@@ -1339,8 +1338,7 @@ export default {
           : glassWhite
             ? "saturate(0.55) brightness(1.06)"
             : "saturate(1) brightness(1.03)",
-        "--lg-card-base": cardBase,
-        "--lg-card-shadow": cardShadow,
+        "--lg-card-tray": cardTray,
       };
     },
     desktopWindowBaseStyle: function () {
@@ -1894,13 +1892,11 @@ body {
     linear-gradient(112deg, transparent 0%, var(--lg-streak) 18%, transparent 34%),
     radial-gradient(110% 150% at 12% 0%, var(--lg-sheen), transparent 58%),
     linear-gradient(160deg, var(--lg-glass), var(--lg-glass-strong));
-  background-color: var(--lg-card-base);
   border-color: var(--lg-border);
   box-shadow:
     inset 0 1px 0 var(--lg-highlight),
     inset 0 0 22px rgba(255, 255, 255, 0.16),
-    inset 0 -8px 18px var(--lg-inner-shadow),
-    0 10px 24px var(--lg-card-shadow);
+    inset 0 -8px 18px var(--lg-inner-shadow);
   -webkit-backdrop-filter: blur(6px) var(--lg-panel-effects);
   backdrop-filter: blur(6px) var(--lg-panel-effects);
 }
@@ -1908,6 +1904,12 @@ body {
 .desktop-mode.desktop-glass.desktop-glass-ready .to-do-list-container {
   -webkit-backdrop-filter: url(#lg-columns) blur(6px) var(--lg-panel-effects);
   backdrop-filter: url(#lg-columns) blur(6px) var(--lg-panel-effects);
+}
+
+.desktop-mode.desktop-glass .todo-slider {
+  background: var(--lg-card-tray);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 var(--lg-highlight);
 }
 
 .desktop-glass .weekly-to-do-header {
