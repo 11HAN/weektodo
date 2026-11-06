@@ -24,7 +24,6 @@
       'desktop-mode': desktopMode,
       'desktop-settings-window': isDesktopSettingsWindow,
       'desktop-glass': desktopMode && !isDesktopSettingsWindow && desktopThemeDefinition.liquidGlass,
-      'desktop-glass-clear': desktopMode && !isDesktopSettingsWindow && desktopThemeDefinition.liquidGlass && !desktopThemeDefinition.dark && !desktopThemeDefinition.glassTint,
       'desktop-glass-ready': desktopMode && !isDesktopSettingsWindow && desktopThemeDefinition.liquidGlass && liquidGlassReady,
       'desktop-texture': desktopMode && desktopThemeDefinition.texture,
       'desktop-modal-open': desktopModalOpen && !isDesktopSettingsWindow,
@@ -740,11 +739,11 @@ export default {
             width: column.clientWidth,
             height: column.clientHeight,
             radius: 14,
-            bezel: 8,
+            bezel: 10,
             thickness: 45,
             ior: 1.5,
-            scaleRatio: 0.45,
-            mapWidth: 320,
+            scaleRatio: 0.7,
+            mapWidth: 480,
           }
         : null;
 
@@ -1876,46 +1875,27 @@ body {
   backdrop-filter: url(#lg-header) blur(6px) var(--lg-panel-effects);
 }
 
-.desktop-glass .to-do-list-container {
+/* Cards use the same liquid-glass surface as the widget header. The extra
+   .desktop-mode class is needed because the shared desktop card rule below
+   would otherwise override these gradients and shadows. */
+.desktop-mode.desktop-glass .to-do-list-container {
   background:
-    linear-gradient(112deg, transparent 0%, var(--lg-streak) 16%, transparent 34%),
-    radial-gradient(120% 80% at 8% 0%, var(--lg-sheen), transparent 52%),
-    linear-gradient(155deg, var(--lg-glass), var(--lg-glass-strong));
+    linear-gradient(112deg, transparent 0%, var(--lg-streak) 18%, transparent 34%),
+    radial-gradient(110% 150% at 12% 0%, var(--lg-sheen), transparent 58%),
+    linear-gradient(160deg, var(--lg-glass), var(--lg-glass-strong));
   border-color: var(--lg-border);
   box-shadow:
     inset 0 1px 0 var(--lg-highlight),
-    inset 0 0 24px rgba(255, 255, 255, 0.18),
-    inset 0 -12px 26px var(--lg-inner-shadow),
-    0 14px 32px var(--lg-shadow);
-  -webkit-backdrop-filter: blur(5px) var(--lg-panel-effects);
-  backdrop-filter: blur(5px) var(--lg-panel-effects);
+    inset 0 0 22px rgba(255, 255, 255, 0.16),
+    inset 0 -8px 18px var(--lg-inner-shadow),
+    0 12px 28px var(--lg-shadow);
+  -webkit-backdrop-filter: blur(6px) var(--lg-panel-effects);
+  backdrop-filter: blur(6px) var(--lg-panel-effects);
 }
 
-.desktop-glass.desktop-glass-ready .to-do-list-container {
-  -webkit-backdrop-filter: url(#lg-columns) blur(4px) var(--lg-panel-effects);
-  backdrop-filter: url(#lg-columns) blur(4px) var(--lg-panel-effects);
-}
-
-.desktop-glass-clear .to-do-list-container {
-  background:
-    radial-gradient(120% 80% at 12% -10%, rgba(255, 255, 255, 0.26), transparent 50%),
-    radial-gradient(80% 80% at 100% 100%, rgba(91, 124, 250, 0.14), transparent 60%),
-    linear-gradient(118deg, transparent 0%, rgba(255, 255, 255, 0.16) 16%, transparent 34%),
-    linear-gradient(155deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.005));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.98),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.62),
-    inset 0 0 32px rgba(255, 255, 255, 0.22),
-    inset 0 -18px 32px rgba(30, 50, 70, 0.05),
-    inset 0 0 60px rgba(91, 124, 250, 0.1),
-    0 16px 38px var(--lg-shadow);
-  -webkit-backdrop-filter: blur(8px) saturate(1.15) brightness(1.05);
-  backdrop-filter: blur(8px) saturate(1.15) brightness(1.05);
-}
-
-.desktop-glass-clear.desktop-glass-ready .to-do-list-container {
-  -webkit-backdrop-filter: url(#lg-columns) blur(8px) saturate(1.15) brightness(1.05);
-  backdrop-filter: url(#lg-columns) blur(8px) saturate(1.15) brightness(1.05);
+.desktop-mode.desktop-glass.desktop-glass-ready .to-do-list-container {
+  -webkit-backdrop-filter: url(#lg-columns) blur(6px) var(--lg-panel-effects);
+  backdrop-filter: url(#lg-columns) blur(6px) var(--lg-panel-effects);
 }
 
 .desktop-glass .weekly-to-do-header {
