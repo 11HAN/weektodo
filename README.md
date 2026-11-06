@@ -21,10 +21,6 @@ WeekToDo 是一款注重隐私的免费极简周计划应用。你可以用待�
   <img src="docs/screenshots/desktop-widget.png" alt="Windows 上的 WeekToDo 桌面组件" width="100%" />
 </p>
 
-<p align="center">
-  <sub>截图展示的是空白的未来周，避免暴露个人任务数据。</sub>
-</p>
-
 ### 设置
 
 <p align="center">
@@ -111,7 +107,7 @@ WeekToDo 是一个 GPL 许可的开源项目，其持续开发完全依靠用户
 
 从 [Releases](https://github.com/11HAN/weektodo/releases/latest) 下载最新版安装包：
 
-- `WeekToDo Setup 2.2.11.exe`（x64）
+- `WeekToDo Setup 2.2.12.exe`（x64）
 
 双击安装后，应用会直接以桌面组件运行。通过托盘菜单可以打开设置、开关组件或退出。
 
@@ -147,7 +143,7 @@ yarn electron:build
 
 产物：
 
-- 安装包：`dist_electron\WeekToDo Setup 2.2.11.exe`
+- 安装包：`dist_electron\WeekToDo Setup 2.2.12.exe`
 - 免安装目录：`dist_electron\win-unpacked\WeekToDo.exe`
 
 只想生成免安装目录时，使用 `yarn electron:build --dir`。打包前请先退出正在运行的 WeekToDo。
