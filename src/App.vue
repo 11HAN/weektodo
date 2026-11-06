@@ -1267,13 +1267,6 @@ export default {
         : glassWhite
           ? "rgba(255, 255, 255, 1)"
           : "rgba(255, 255, 255, 0.9)";
-      // Shared tray behind the columns. It keeps the gaps between the glass
-      // cards light instead of revealing the wallpaper as dark seams.
-      const cardTray = glassDark
-        ? "rgba(10, 18, 28, 0.3)"
-        : glassWhite
-          ? "rgba(255, 255, 255, 0.34)"
-          : "rgba(255, 255, 255, 0.22)";
       const customColor = /^#[0-9a-f]{6}$/i.test(this.fontColor)
         ? this.fontColor
         : "";
@@ -1338,7 +1331,6 @@ export default {
           : glassWhite
             ? "saturate(0.55) brightness(1.06)"
             : "saturate(1) brightness(1.03)",
-        "--lg-card-tray": cardTray,
       };
     },
     desktopWindowBaseStyle: function () {
@@ -1888,6 +1880,11 @@ body {
    .desktop-mode class is needed because the shared desktop card rule below
    would otherwise override these gradients and shadows. */
 .desktop-mode.desktop-glass .to-do-list-container {
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 0;
+  border-left-width: 0;
+  border-right-width: 0;
   background:
     linear-gradient(112deg, transparent 0%, var(--lg-streak) 18%, transparent 34%),
     radial-gradient(110% 150% at 12% 0%, var(--lg-sheen), transparent 58%),
@@ -1901,15 +1898,21 @@ body {
   backdrop-filter: blur(6px) var(--lg-panel-effects);
 }
 
+.desktop-mode.desktop-glass .to-do-list-container:first-child {
+  border-top-left-radius: 14px;
+  border-bottom-left-radius: 14px;
+  border-left-width: 1px;
+}
+
+.desktop-mode.desktop-glass .to-do-list-container:last-child {
+  border-top-right-radius: 14px;
+  border-bottom-right-radius: 14px;
+  border-right-width: 1px;
+}
+
 .desktop-mode.desktop-glass.desktop-glass-ready .to-do-list-container {
   -webkit-backdrop-filter: url(#lg-columns) blur(6px) var(--lg-panel-effects);
   backdrop-filter: url(#lg-columns) blur(6px) var(--lg-panel-effects);
-}
-
-.desktop-mode.desktop-glass .todo-slider {
-  background: var(--lg-card-tray);
-  border-radius: 16px;
-  box-shadow: inset 0 1px 0 var(--lg-highlight);
 }
 
 .desktop-glass .weekly-to-do-header {
