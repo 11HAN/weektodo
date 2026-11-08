@@ -1267,14 +1267,8 @@ export default {
         : glassWhite
           ? "rgba(255, 255, 255, 1)"
           : "rgba(255, 255, 255, 0.9)";
-      const cardGap = glassDark
-        ? "rgba(10, 18, 28, 0.3)"
-        : glassWhite
-          ? "rgba(255, 255, 255, 0.34)"
-          : "rgba(255, 255, 255, 0.24)";
-      // Every card draws its rim on all four sides, so the two rims facing each
-      // 8px seam sit side by side and read as bright white vertical bars. Keep
-      // the card outline faint; the seams only need a soft glass edge.
+      // Every card draws its own rim; keep it faint so the hairline divider
+      // between the columns stays soft instead of a bright white bar.
       const cardBorder = glassDark
         ? "rgba(255, 255, 255, 0.16)"
         : glassWhite
@@ -1344,7 +1338,6 @@ export default {
           : glassWhite
             ? "saturate(0.55) brightness(1.06)"
             : "saturate(1) brightness(1.03)",
-        "--lg-card-gap": cardGap,
         "--lg-card-border": cardBorder,
       };
     },
@@ -1899,11 +1892,15 @@ body {
     linear-gradient(112deg, transparent 0%, var(--lg-streak) 18%, transparent 34%),
     radial-gradient(110% 150% at 12% 0%, var(--lg-sheen), transparent 58%),
     linear-gradient(160deg, var(--lg-glass), var(--lg-glass-strong));
+  /* No gap between the columns: the 4px side margins left a strip that read as
+     a white vertical bar no matter what colour it was painted. The seven cards
+     now form one glass sheet with a single hairline divider. */
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 0;
   border-color: var(--lg-card-border);
-  /* Left/right rims would sit inside every 8px seam and show up as bright
-     white vertical bars; only the top and bottom edges keep a border. */
   border-left-width: 0;
-  border-right-width: 0;
+  border-right-width: 1px;
   box-shadow:
     inset 0 1px 0 var(--lg-highlight),
     inset 0 0 22px rgba(255, 255, 255, 0.16),
@@ -1912,24 +1909,20 @@ body {
   backdrop-filter: blur(6px) var(--lg-panel-effects);
 }
 
+.desktop-mode.desktop-glass .to-do-list-container:first-child {
+  border-top-left-radius: 14px;
+  border-bottom-left-radius: 14px;
+}
+
+.desktop-mode.desktop-glass .to-do-list-container:last-child {
+  border-top-right-radius: 14px;
+  border-bottom-right-radius: 14px;
+  border-right-width: 0;
+}
+
 .desktop-mode.desktop-glass.desktop-glass-ready .to-do-list-container {
   -webkit-backdrop-filter: url(#lg-columns) blur(6px) var(--lg-panel-effects);
   backdrop-filter: url(#lg-columns) blur(6px) var(--lg-panel-effects);
-}
-
-/* Paint only the 8px gaps between the seven columns. There is no visible
-   tray behind the cards, but the seams no longer reveal dark wallpaper. */
-.desktop-mode.desktop-glass .todo-slider {
-  background-color: transparent;
-  background-image: repeating-linear-gradient(
-    to right,
-    var(--lg-card-gap) 0px,
-    var(--lg-card-gap) 4px,
-    transparent 4px,
-    transparent calc(100% / 7 - 4px),
-    var(--lg-card-gap) calc(100% / 7 - 4px),
-    var(--lg-card-gap) calc(100% / 7)
-  );
 }
 
 .desktop-glass .weekly-to-do-header {
