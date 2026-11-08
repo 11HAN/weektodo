@@ -224,6 +224,19 @@ async function createDesktopWindow() {
   desktopWindow.setSkipTaskbar(true);
   desktopWindow.setAlwaysOnTop(false);
 
+  // Debugger shortcut: F12 or Ctrl+Shift+I opens devtools for the widget so a
+  // visual glitch can be inspected in place. Detached so the widget layout does
+  // not change while inspecting.
+  desktopWindow.webContents.on("before-input-event", (event, input) => {
+    if (input.type !== "keyDown") return;
+    const key = (input.key || "").toLowerCase();
+    const isToggle =
+      key === "f12" || (input.control && input.shift && key === "i");
+    if (!isToggle) return;
+    event.preventDefault();
+    toggleDesktopDevTools();
+  });
+
   desktopWindow.on("close", (event) => {
     if (app.isQuiting || desktopWidgetStopping) return;
     event.preventDefault();
@@ -266,6 +279,16 @@ async function createDesktopWindow() {
     stopDesktopWidget();
     throw error;
   }
+}
+
+function toggleDesktopDevTools() {
+  if (!desktopWindow || desktopWindow.isDestroyed()) return;
+  const contents = desktopWindow.webContents;
+  if (contents.isDevToolsOpened()) {
+    contents.closeDevTools();
+    return;
+  }
+  contents.openDevTools({ mode: "detach", activate: true });
 }
 
 function buildDesktopBackdrop() {
@@ -1178,6 +1201,13 @@ function createTray() {
       checked: !!config.get("desktopWidget"),
       click(item) {
         setDesktopWidgetEnabled(item.checked);
+      },
+    },
+    {
+      id: "desktopDevTools",
+      label: "开发者工具（桌面组件）",
+      click() {
+        toggleDesktopDevTools();
       },
     },
     {
