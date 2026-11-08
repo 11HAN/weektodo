@@ -25,6 +25,11 @@
           <i class="bi-plus-lg"></i> <span>{{ $t('ui.newTask') }}</span>
         </button>
       </li>
+      <li>
+        <button class="dropdown-item" type="button" @click="batchAddTasks">
+          <i class="bi-list-task"></i> <span>{{ $t('ui.batchAddTasks') }}</span>
+        </button>
+      </li>
       <li v-show="hasPendingTasks()">
         <button class="dropdown-item" type="button" @click="check_all_items">
           <i class="bi-check2-all"></i> <span>{{ $t('ui.completeAll') }}</span>
@@ -186,6 +191,9 @@ export default {
         const input = list.getElementsByClassName("new-todo-input")[0];
         if (input) input.focus();
       });
+    },
+    batchAddTasks: function () {
+      this.$emit("batch-add");
     }
   },
   computed: {

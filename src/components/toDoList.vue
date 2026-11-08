@@ -8,8 +8,28 @@
       </div>
     </div>
 
-    <list-header :id="id" :customTodoList="customTodoList" :cTodoListIndex="cTodoListIndex" :toDoList="toDoListState">
+    <list-header :id="id" :customTodoList="customTodoList" :cTodoListIndex="cTodoListIndex" :toDoList="toDoListState"
+      @batch-add="startBatchAdd">
     </list-header>
+    <div v-if="batchAdding" class="batch-add-panel">
+      <textarea
+        ref="batchInput"
+        v-model="batchText"
+        class="batch-add-input"
+        rows="3"
+        :placeholder="$t('ui.batchAddPlaceholder')"
+        @keydown.esc.stop.prevent="cancelBatchAdd"
+        @keydown.ctrl.enter.stop.prevent="commitBatchAdd"
+        @keydown.meta.enter.stop.prevent="commitBatchAdd"
+        @blur="commitBatchAdd"
+      ></textarea>
+      <div class="batch-add-actions">
+        <span class="batch-add-hint">{{ $t('ui.batchAddHint') }}</span>
+        <button type="button" class="batch-add-submit" @mousedown.prevent @click="commitBatchAdd">
+          {{ $t('ui.batchAddSubmit') }}
+        </button>
+      </div>
+    </div>
     <ul class="to-do-list">
       <li v-for="(toDo, index) in toDoListState" :key="index">
         <div class="drop-zone" @drop="onDrop($event, id, index)" @dragover.prevent @dragenter.prevent>
@@ -62,6 +82,8 @@ export default {
     return {
       newToDo: { text: "", checked: false, failed: false },
       newTodoActive: false,
+      batchAdding: false,
+      batchText: "",
       fakeItemCounts: 6,
       fakeItemsDragHover: false,
       loading: false,
@@ -120,6 +142,46 @@ export default {
     cancelAdd: function () {
       this.newToDo.text = "";
       this.newTodoActive = false;
+    },
+    startBatchAdd: function () {
+      this.batchText = "";
+      this.batchAdding = true;
+      // The dropdown returns focus to its toggle while it hides, so focus the
+      // textarea after the menu has closed, otherwise it blurs and closes.
+      window.setTimeout(() => {
+        if (this.$refs.batchInput) this.$refs.batchInput.focus();
+      }, 220);
+    },
+    cancelBatchAdd: function () {
+      this.batchAdding = false;
+      this.batchText = "";
+    },
+    commitBatchAdd: function () {
+      if (!this.batchAdding) return;
+      const lines = this.batchText
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+      this.batchAdding = false;
+      this.batchText = "";
+      if (!lines.length) return;
+      lines.forEach((text) => {
+        this.$store.commit("addTodo", {
+          text: text,
+          checked: false,
+          failed: false,
+          listId: this.id,
+          desc: "",
+          subTaskList: [],
+          color: "none",
+          priority: 0,
+          tags: [],
+          time: null,
+          alarm: false,
+          repeatingEvent: null,
+        });
+      });
+      this.updateTodoList(this.id, this.$store.getters.todoLists[this.id]);
     },
     moments: function (date) {
       return moment(date);
@@ -206,6 +268,57 @@ export default {
 </script>
 
 <style scoped>
+.batch-add-panel {
+  margin: 2px 0 6px;
+}
+
+.batch-add-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 4px 6px;
+  resize: none;
+  box-sizing: border-box;
+  font-size: 0.865rem;
+  line-height: 1.3rem;
+  color: var(--dw-text, #111827);
+  background: var(--dw-panel-strong, #ffffff);
+  border: 1px solid var(--dw-border, #dddfe2);
+  border-radius: 8px;
+  outline: none;
+}
+
+.batch-add-input:focus {
+  border-color: var(--dw-accent, #3b82f6);
+}
+
+.batch-add-input::placeholder {
+  color: var(--dw-muted, #6b7280);
+}
+
+.batch-add-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.batch-add-hint {
+  font-size: 0.72rem;
+  color: var(--dw-muted, #6b7280);
+}
+
+.batch-add-submit {
+  flex: 0 0 auto;
+  padding: 1px 10px;
+  font-size: 0.78rem;
+  color: var(--dw-accent, #3b82f6);
+  background: var(--dw-accent-soft, rgba(59, 130, 246, 0.12));
+  border: 1px solid var(--dw-border, #dddfe2);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 .to-do-list {
   list-style: none;
   padding-inline-start: 0px;
