@@ -1272,6 +1272,14 @@ export default {
         : glassWhite
           ? "rgba(255, 255, 255, 0.34)"
           : "rgba(255, 255, 255, 0.24)";
+      // Every card draws its rim on all four sides, so the two rims facing each
+      // 8px seam sit side by side and read as bright white vertical bars. Keep
+      // the card outline faint; the seams only need a soft glass edge.
+      const cardBorder = glassDark
+        ? "rgba(255, 255, 255, 0.16)"
+        : glassWhite
+          ? "rgba(255, 255, 255, 0.3)"
+          : "rgba(255, 255, 255, 0.24)";
       const customColor = /^#[0-9a-f]{6}$/i.test(this.fontColor)
         ? this.fontColor
         : "";
@@ -1337,6 +1345,7 @@ export default {
             ? "saturate(0.55) brightness(1.06)"
             : "saturate(1) brightness(1.03)",
         "--lg-card-gap": cardGap,
+        "--lg-card-border": cardBorder,
       };
     },
     desktopWindowBaseStyle: function () {
@@ -1890,7 +1899,11 @@ body {
     linear-gradient(112deg, transparent 0%, var(--lg-streak) 18%, transparent 34%),
     radial-gradient(110% 150% at 12% 0%, var(--lg-sheen), transparent 58%),
     linear-gradient(160deg, var(--lg-glass), var(--lg-glass-strong));
-  border-color: var(--lg-border);
+  border-color: var(--lg-card-border);
+  /* Left/right rims would sit inside every 8px seam and show up as bright
+     white vertical bars; only the top and bottom edges keep a border. */
+  border-left-width: 0;
+  border-right-width: 0;
   box-shadow:
     inset 0 1px 0 var(--lg-highlight),
     inset 0 0 22px rgba(255, 255, 255, 0.16),
