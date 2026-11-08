@@ -1892,32 +1892,18 @@ body {
     linear-gradient(112deg, transparent 0%, var(--lg-streak) 18%, transparent 34%),
     radial-gradient(110% 150% at 12% 0%, var(--lg-sheen), transparent 58%),
     linear-gradient(160deg, var(--lg-glass), var(--lg-glass-strong));
-  /* No gap between the columns: the 4px side margins left a strip that read as
-     a white vertical bar no matter what colour it was painted. The seven cards
-     now form one glass sheet with a single hairline divider. */
-  margin-left: 0;
-  margin-right: 0;
-  border-radius: 0;
+  /* The gaps between the columns stay empty: they show the widget's blurred
+     wallpaper, exactly like the glass rim, and never need a fill colour. A
+     fill always read as a separate white (or dark) vertical bar. */
   border-color: var(--lg-card-border);
   border-left-width: 0;
-  border-right-width: 1px;
+  border-right-width: 0;
   box-shadow:
     inset 0 1px 0 var(--lg-highlight),
     inset 0 0 22px rgba(255, 255, 255, 0.16),
     inset 0 -8px 18px var(--lg-inner-shadow);
   -webkit-backdrop-filter: blur(6px) var(--lg-panel-effects);
   backdrop-filter: blur(6px) var(--lg-panel-effects);
-}
-
-.desktop-mode.desktop-glass .to-do-list-container:first-child {
-  border-top-left-radius: 14px;
-  border-bottom-left-radius: 14px;
-}
-
-.desktop-mode.desktop-glass .to-do-list-container:last-child {
-  border-top-right-radius: 14px;
-  border-bottom-right-radius: 14px;
-  border-right-width: 0;
 }
 
 .desktop-mode.desktop-glass.desktop-glass-ready .to-do-list-container {
